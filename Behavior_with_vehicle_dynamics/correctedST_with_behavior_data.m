@@ -119,3 +119,4 @@ w = 2*pi*f;
 A = lanewidth/2 ;   % from middle of the lane to the middle
 y_init = lanewidth/2;         % signifies the starting point in y
 x_init = 0;
+P_init = 0.0025;
