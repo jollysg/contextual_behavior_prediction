@@ -3,6 +3,12 @@ classdef MotionModel < handle
         Ts
         states
         propagated_states
+        
+        % discretized matrices
+        Fd_matrix
+        Bd_matrix
+        Cd_matrix
+        Dd_matrix
     end
     methods (Abstract)
         x_apriori = propagate(obj, x, u)

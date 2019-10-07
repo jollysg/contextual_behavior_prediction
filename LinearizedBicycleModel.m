@@ -1,14 +1,17 @@
-classdef LinearizedBicycleModel < MotionModel
+classdef LinearizedBicycleModel < MotionModel & MeasurementModel
     properties
         Ts
         % [ y y_dot psi psi_dot], input (u) is in radians
         states
         propagated_states
+        init_states
         % A matrix in case of linear systems, jacobian matrix F in case of
         % non linear
         %discretized F matrix (A) matrix
         Fd_matrix
         Bd_matrix
+        Cd_matrix
+        Dd_matrix
         vehicleParameters
         a22_c
         a24_c
@@ -38,6 +41,8 @@ classdef LinearizedBicycleModel < MotionModel
             
             % use the model from rajamani, with lateral velocity and yaw
             % rate as states - [y vy psi psi_dot]
+            obj.init_states = [0; 0; 0; 0];
+            obj.states = obj.init_states;
             
             obj.a22_c = -(vp.C_f + vp.C_r)/vp.m;
             obj.a24_c = (vp.C_f*vp.l_f - vp.C_r*vp.l_r)/vp.m;  
@@ -54,6 +59,8 @@ classdef LinearizedBicycleModel < MotionModel
         function calculateDiscretizedMatrices(obj, V)
             F = obj.calculateContinuousStateTransitionMatrix(V);
             B = obj.getInputMatrix();
+            C = obj.getOutputMatrix();
+            D = 0;
             
             % disretize using Numerical integration. Ad = expm(A * Ts), 
             % Bd = (Ad - I)BA^-1
@@ -64,14 +71,23 @@ classdef LinearizedBicycleModel < MotionModel
 %             obj.Bd_matrix = (obj.Fd_matrix - eye(4))* F\B; 
 
             % Using euler forward
-            obj.Fd_matrix = (eye(4) + F * obj.Ts);
-            obj.Bd_matrix = B * obj.Ts;
+%             obj.Fd_matrix = (eye(4) + F * obj.Ts);
+%             obj.Bd_matrix = B * obj.Ts;
+            
+            % trapezoidal, works good for linear
+            trap_term = eye(4) - F * obj.Ts/2;
+            obj.Fd_matrix = trap_term\(eye(4) + F * obj.Ts/2);
+            obj.Bd_matrix = trap_term\B * obj.Ts;
+            obj.Cd_matrix = C/trap_term;
+            obj.Dd_matrix = D + obj.Cd_matrix*B*stime/2;
+
         end
         
         function  x_apriori = propagate(obj, x, u)
             % u is in radians
             obj.states = x;
             x_apriori = obj.Fd_matrix * x + obj.Bd_matrix * u;
+            obj.propagated_states = x_apriori;
         end
         
         function F = calculateContinuousStateTransitionMatrix(obj, Vx)
@@ -95,10 +111,21 @@ classdef LinearizedBicycleModel < MotionModel
             B = [0; obj.bb_2; 0; obj.bb_4];
         end
         
+        function C = getOutputMatrix(obj)
+            C = [1 0 0 0 0];
+        end
+        
         function Fd = linearizedDiscreteStateTransitionMatrix(obj, x, u)
             % x not used since the system is linear
             Fd = obj.Fd_matrix;
         end
         
+        % Measurement model functions
+        
+        function y_hat = estimatedMeasurement(obj, x_minus, u)
+            % x_minus should typically be the predicted estimate, a column
+            % vector
+            y_hat = obj.Cd_matrix * x_minus + obj.Dd_matrix * u;
+        end
     end
 end
