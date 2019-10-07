@@ -20,6 +20,7 @@ classdef LinearizedBicycleModel < MotionModel & MeasurementModel
         bb_2
         bb_4
         V
+        output_states
     end
     
     methods
@@ -79,7 +80,7 @@ classdef LinearizedBicycleModel < MotionModel & MeasurementModel
             obj.Fd_matrix = trap_term\(eye(4) + F * obj.Ts/2);
             obj.Bd_matrix = trap_term\B * obj.Ts;
             obj.Cd_matrix = C/trap_term;
-            obj.Dd_matrix = D + obj.Cd_matrix*B*stime/2;
+            obj.Dd_matrix = D + obj.Cd_matrix*B*obj.Ts/2;
 
         end
         
@@ -112,7 +113,7 @@ classdef LinearizedBicycleModel < MotionModel & MeasurementModel
         end
         
         function C = getOutputMatrix(obj)
-            C = [1 0 0 0 0];
+            C = [1 0 0 0 ];
         end
         
         function Fd = linearizedDiscreteStateTransitionMatrix(obj, x, u)

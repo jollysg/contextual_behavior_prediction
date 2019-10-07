@@ -11,6 +11,9 @@ classdef SimplifiedKinematicBicycleModel < NonLinearMotionModel
         %discretized F matrix (A) matrix
         Fd_matrix
         Bd_matrix
+        Cd_matrix
+        Dd_matrix
+
         vehicleParameters    
     end
     

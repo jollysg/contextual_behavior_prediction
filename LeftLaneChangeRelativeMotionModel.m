@@ -7,6 +7,11 @@ classdef LeftLaneChangeRelativeMotionModel < MotionModel
         % angular frequency of sinusoidal wave
         w
         
+        Fd_matrix
+        Bd_matrix
+        Cd_matrix
+        Dd_matrix
+
         % states = [x vx y vy rel_x]
         states
         
