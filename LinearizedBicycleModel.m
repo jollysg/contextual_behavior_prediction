@@ -1,17 +1,7 @@
 classdef LinearizedBicycleModel < MotionModel & MeasurementModel
     properties
-        Ts
-        % [ y y_dot psi psi_dot], input (u) is in radians
-        states
-        propagated_states
+        % states - [ y y_dot psi psi_dot], input (u) is in radians
         init_states
-        % A matrix in case of linear systems, jacobian matrix F in case of
-        % non linear
-        %discretized F matrix (A) matrix
-        Fd_matrix
-        Bd_matrix
-        Cd_matrix
-        Dd_matrix
         vehicleParameters
         a22_c
         a24_c
@@ -20,11 +10,10 @@ classdef LinearizedBicycleModel < MotionModel & MeasurementModel
         bb_2
         bb_4
         V
-        output_states
     end
     
     methods
-        function obj = LinearizedBicycleModel(V, Ts, vp)
+        function obj = LinearizedBicycleModel(Ts, V, vp)
             if nargin == 0
                 % Init to a default vehicle
                 V = 10;
@@ -81,6 +70,7 @@ classdef LinearizedBicycleModel < MotionModel & MeasurementModel
             obj.Bd_matrix = trap_term\B * obj.Ts;
             obj.Cd_matrix = C/trap_term;
             obj.Dd_matrix = D + obj.Cd_matrix*B*obj.Ts/2;
+            obj.V = V;
 
         end
         
@@ -121,12 +111,5 @@ classdef LinearizedBicycleModel < MotionModel & MeasurementModel
             Fd = obj.Fd_matrix;
         end
         
-        % Measurement model functions
-        
-        function y_hat = estimatedMeasurement(obj, x_minus, u)
-            % x_minus should typically be the predicted estimate, a column
-            % vector
-            y_hat = obj.Cd_matrix * x_minus + obj.Dd_matrix * u;
-        end
     end
 end

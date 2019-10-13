@@ -1,6 +1,6 @@
 classdef VehicleParametersBicycleModel
     %default vehicle parameters
-    properties (Abstract)
+    properties
         %mass (Kgs)
         m
         %dist of front axle from CG (m)

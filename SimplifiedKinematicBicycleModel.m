@@ -1,19 +1,6 @@
-classdef SimplifiedKinematicBicycleModel < NonLinearMotionModel
+classdef SimplifiedKinematicBicycleModel < NonLinearMotionModel & MeasurementModel
     properties
-        Ts
-        % states are [x, y, psi, v, delta], v is the velocity vector in
-        % inertial frame
-        states
-        propagated_states
         init_states
-        % A matrix in case of linear systems, jacobian matrix F in case of
-        % non linear
-        %discretized F matrix (A) matrix
-        Fd_matrix
-        Bd_matrix
-        Cd_matrix
-        Dd_matrix
-
         vehicleParameters    
     end
     
@@ -31,12 +18,12 @@ classdef SimplifiedKinematicBicycleModel < NonLinearMotionModel
                 vp = SedanBicycleModelParameters();
             end
             
-           obj.Ts = Ts;
+            obj.Ts = Ts;
 
-           % states - [x y psi v beta]
-           obj.init_states = [0; 0; 0; V; 0];
-           obj.states = obj.init_states;            
-           obj.vehicleParameters = vp;
+            % states - [x y psi v beta]
+            obj.init_states = [0; 0; 0; V; 0];
+            obj.states = obj.init_states;            
+            obj.vehicleParameters = vp;
 
             obj.Bd_matrix = [   0 0;
                                 0 0;
@@ -111,5 +98,6 @@ classdef SimplifiedKinematicBicycleModel < NonLinearMotionModel
 % 
 %             obj.Bd_matrix = trap_term\B * obj.Ts;
         end
+             
     end
 end

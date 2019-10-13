@@ -11,7 +11,7 @@ function x_apriori = leftLaneChangeParametricFcn(x,u,len,lateral_dist)
 A = lateral_dist/2;
 f = 1/(2*len);
 w = 2*pi*f;
-Ts_bp = 0.01;
+Ts_bp = 0.1;
 x_apriori = [x(1) + x(2)*Ts_bp; x(2); x(3) + x(4)*Ts_bp; -A*w*x(2)*sin(w*x(1)-pi)] + u;
 end
 

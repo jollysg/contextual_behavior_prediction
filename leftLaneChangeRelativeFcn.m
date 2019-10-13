@@ -14,7 +14,7 @@ function x_apriori = leftLaneChangeRelativeFcn(x,u,len,lateral_dist)
 A = lateral_dist/2;
 f = 1/(2*len);
 w = 2*pi*f;
-Ts_bp = 0.01;
+Ts_bp = 0.1;
  x_apriori = [x(1) + x(2)*Ts_bp; x(2); -A * cos(w*(x(1)-x(5))) + A; A*w*x(2)*sin(w*(x(1)-x(5))); x(5)] + u;
 % x_apriori = [x(1) + x(2)*Ts_bp; x(2); -A * cos(w*x(5)) + A; A*w*x(2)*sin(w*x(5)); x(5)] + u;
 end

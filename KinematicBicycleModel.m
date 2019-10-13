@@ -1,18 +1,11 @@
 classdef KinematicBicycleModel < NonLinearMotionModel
     properties
-        Ts
-        % states are [x, y, psi, v, beta], v is the velocity vector in
-        % inertial frame
-        states
-        propagated_states
+         % states are [x, y, psi, v, beta], v is the velocity vector in
+%         % inertial frame
         init_states
         % A matrix in case of linear systems, jacobian matrix F in case of
         % non linear
         %discretized F matrix (A) matrix
-        Fd_matrix
-        Bd_matrix
-        Cd_matrix
-        Dd_matrix
         vehicleParameters    
     end
     

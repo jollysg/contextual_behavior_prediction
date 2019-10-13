@@ -1,5 +1,5 @@
 classdef MotionModel < handle
-    properties(Abstract)
+    properties
         Ts
         states
         propagated_states
@@ -15,6 +15,12 @@ classdef MotionModel < handle
         
         % following should return a jacobian in case of non linear motion
         % models
-        F = linearizedDiscreteStateTransitionMatrix(obj, x, u)
+        F = linearizedDiscreteStateTransitionMatrix(obj, x, u)        
+    end
+    
+    methods
+        function c_matrix = getOutputMatrix(self)
+            c_matrix = self.Cd_matrix;
+        end        
     end
 end

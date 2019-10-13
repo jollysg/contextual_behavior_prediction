@@ -11,7 +11,7 @@ function dfdx = leftLaneChangeParametricJacobianFcn(x,u,len,lateral_dist)
 A = lateral_dist/2;
 f = 1/(2*len);
 w = 2*pi*f;
-Ts = 0.01;
+Ts = 0.1;
 dfdx = [1 Ts 0 0; 0 1 0 0; 0 0 1 Ts; A*w^2*x(2)*cos(w*x(1)-pi) -A*w*sin(w*x(1)-pi) 0 0];
 end
 
