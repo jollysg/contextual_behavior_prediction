@@ -13,7 +13,7 @@ fullFilename = mfilename('fullpath')
 
 % addpath('./motionModelClasses')
 disp('Following files will be added to the path...');
-for folder = ["/motionModelClasses", "/mmae_filters", "/filter_classes"]
+for folder = ["/motionModelClasses", "/mmae_filters", "/filter_classes", "/VehicleParameters"]
     folder_path = append(filepath, folder);
     disp(folder_path)
     addpath(folder_path)
