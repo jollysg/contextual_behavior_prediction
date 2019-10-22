@@ -73,14 +73,7 @@ classdef LinearizedBicycleModel < MotionModel & MeasurementModel
             obj.V = V;
 
         end
-        
-        function  x_apriori = propagate(obj, x, u)
-            % u is in radians
-            obj.states = x;
-            x_apriori = obj.Fd_matrix * x + obj.Bd_matrix * u;
-            obj.propagated_states = x_apriori;
-        end
-        
+                
         function F = calculateContinuousStateTransitionMatrix(obj, Vx)
             
             % v_dot = -(c1+c2)/(mV^2)v-1/mV(mV+(ac1-bc2)/V)r + c1/(mV) delta
@@ -105,11 +98,6 @@ classdef LinearizedBicycleModel < MotionModel & MeasurementModel
         function C = getOutputMatrix(obj)
             C = [1 0 0 0 ];
         end
-        
-        function Fd = linearizedDiscreteStateTransitionMatrix(obj, x, u)
-            % x not used since the system is linear
-            Fd = obj.Fd_matrix;
-        end
-        
+                
     end
 end

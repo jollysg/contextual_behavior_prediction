@@ -1,5 +1,24 @@
 clear;
 
+% Get path of this file, and add the parent folder and the subfolders into
+% PATH
+%   which('<filename>') returns the full path of the file
+%   mfilename('fullpath') returns the full path of the file. Without any
+%       arguments, this function returns just the filename
+%   pwd returns the current working directory of matlab, which can be
+%       different from the current file directory
+fullFilename = mfilename('fullpath')
+% get the parent folder from the full filepath
+[filepath, name, ext] = fileparts(fullFilename);
+
+% addpath('./motionModelClasses')
+disp('Following files will be added to the path...');
+for folder = ["/motionModelClasses", "/mmae_filters", "/filter_classes"]
+    folder_path = append(filepath, folder);
+    disp(folder_path)
+    addpath(folder_path)
+end
+
 x = 0;
 vx = 10;
 y = 0;
@@ -31,4 +50,5 @@ P_init = .001;
 % vx = 3.81;
 % x = 14.6953;
 % y = 23.401;
-% ax = 0;
+ax = 0;
+

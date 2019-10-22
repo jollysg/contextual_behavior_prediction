@@ -1,4 +1,4 @@
-classdef XKalmanFilter < handle
+classdef XKalmanFilter < handle %& matlab.mixin.Copyable
     properties
         Ts
         predicted_state
@@ -18,6 +18,9 @@ classdef XKalmanFilter < handle
         err_innov
         % error covariance
         err_cov
+        % experimental
+        weight
+        nonNormalizedWeight
     end
     
     methods
@@ -30,7 +33,19 @@ classdef XKalmanFilter < handle
             end
                 
             self.Ts = Ts;
-            self.mm = MotionModel;            
+            self.mm = MotionModel;
+            self.weight = 1;
+            self.nonNormalizedWeight = 1;
+            self.estimatedState = MotionModel.states;
+            self.estimate_P = eye(length(self.estimatedState));
+            self.predicted_state = MotionModel.states;
+            self.predicted_P = eye(length(self.estimatedState));
+            self.likelihood = 0;
+            self.Q = self.estimate_P*0.001;
+            self.err_innov = MotionModel.output_states;
+            self.R = eye(length(self.err_innov))*0.0025;
+            self.err_cov = self.R;
+            
         end
         
         function self = updateNoiseStatistics(self, Q, R)
@@ -38,7 +53,19 @@ classdef XKalmanFilter < handle
             self.R = R;
         end
         
-        function [x_prop, p_prop] = predict(self, x, P, u)
+        function setInitialConditions(self, X, P)
+                self.estimatedState = X;
+                self.estimate_P = P;
+                self.predicted_state = X;
+                self.predicted_P = P;
+        end
+        
+        function [x_prop, p_prop] = predict(self, u, x, P)
+            if nargin == 2
+                % Use the last propagated states for propagating further
+                x = self.predicted_state;
+                P = self.predicted_P;
+            end
             x_prop =  self.mm.propagate(x, u);
             
             % The first term in the covariance equation can be moved into
@@ -70,12 +97,18 @@ classdef XKalmanFilter < handle
             x_plus = x_prop + K * self.err_innov;
             p_plus = (eye(length(x_prop)) - K * Ck) * P_prop;
             self.estimatedState = x_plus;
+            self.mm.setStates(x_plus);
             self.estimate_P = p_plus;
+           
+            % after correction, predicted and estimated states should be
+            % the same.
+            self.predicted_state = x_plus;
+            self.predicted_P = p_plus;
             
-%             self.likelihood = 1/sqrt(det(2*pi*ek_m_covariance)) ...
-%                 * exp(-1/2 * ek_minus'* inv(ek_m_covariance) * ek_minus);
             self.likelihood = 1/sqrt(det(2*pi*self.err_cov)) ...
                 * exp(-1/2 * self.err_innov'* inv(self.err_cov) * self.err_innov);
+            
+%             self.nonNormalizedWeight = self.weight * self.likelihood;
 
         end
     end
