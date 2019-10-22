@@ -1,4 +1,4 @@
-classdef SimplifiedKinematicBicycleModel < NonLinearMotionModel & MeasurementModel
+*classdef SimplifiedKinematicBicycleModel < NonLinearMotionModel & MeasurementModel
     properties
         init_states
         vehicleParameters    
