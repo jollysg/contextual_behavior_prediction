@@ -21,7 +21,7 @@ classdef LinearizedBicycleModel < MotionModel & MeasurementModel
                 Ts = 0.1;
             elseif nargin == 1
                 vp = SedanBicycleModelParameters();
-                Ts = 0.1;
+                V = 10;
             elseif nargin == 2
                 vp = SedanBicycleModelParameters();
             end

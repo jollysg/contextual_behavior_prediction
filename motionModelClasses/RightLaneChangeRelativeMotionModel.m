@@ -20,21 +20,21 @@ classdef RightLaneChangeRelativeMotionModel < LeftLaneChangeRelativeMotionModel
             % states are [x, vx, y, vy, x_mid], where x_mid is point of
             % maneuver initiation
             % Right lane change
-            % y propagation = A cos(wx - x_mid) - A;
+            % y propagation = A cos(wx - x_mid) - A + y_init;
             delta_x = x(1) - x(5);
             x_plus = [x(1) + x(2)*self.Ts; ...
                             x(2); ...
-                         self.man_A * cos(self.man_w*delta_x) - self.man_A; ...
+                         self.man_A * cos(self.man_w*delta_x) - self.man_A + self.current_lane_y; ...
                          -self.man_A*self.man_w*x(2)*sin(self.man_w*delta_x); ...
                             x(5)] + u;
             self.propagated_states = x_plus;
 
         end
         
-        function F = linearizedDiscreteStateTransitionMatrix(self, x, u)
-            % This can call jacobian function if needed
-            F = self.jacobian(x,u);
-        end
+%         function F = linearizedDiscreteStateTransitionMatrix(self, x, u)
+%             % This can call jacobian function if needed
+%             F = self.jacobian(x,u);
+%         end
         
         function dfdx = jacobian(self, x, u)
             % TODO: Correct this jacobian, the following is the linear

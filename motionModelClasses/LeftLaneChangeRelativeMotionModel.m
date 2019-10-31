@@ -8,6 +8,8 @@ classdef LeftLaneChangeRelativeMotionModel < NonLinearMotionModel & MeasurementM
         man_A
         % Maneuver frequency calculated from length, w = 2*Pi*1/L = Pi/L
         man_w
+        % init y
+        current_lane_y        
         
     end
     
@@ -37,6 +39,7 @@ classdef LeftLaneChangeRelativeMotionModel < NonLinearMotionModel & MeasurementM
             %states [x vx y vy rel_x]';
             self.states = [0 0 0 0 0]';
             self.output_states = [ 0 0]';
+            self.current_lane_y = 0;
         end
         
         function x_plus = propagate(self, x, u)
@@ -46,7 +49,7 @@ classdef LeftLaneChangeRelativeMotionModel < NonLinearMotionModel & MeasurementM
             delta_x = x(1) - x(5);
             x_plus = [x(1) + x(2)*self.Ts; ...
                             x(2); ...
-                         -self.man_A * cos(self.man_w*delta_x) + self.man_A; ...
+                         -self.man_A * cos(self.man_w*delta_x) + self.man_A + self.current_lane_y; ...
                          self.man_A*self.man_w*x(2)*sin(self.man_w*delta_x); ...
                             x(5)] + u;
             self.propagated_states = x_plus;
@@ -67,6 +70,11 @@ classdef LeftLaneChangeRelativeMotionModel < NonLinearMotionModel & MeasurementM
                     self.man_A*self.man_w*sin(self.man_w*delta_x) 0 0 0 -self.man_A*self.man_w*sin(self.man_w*delta_x); 
                     self.man_A*self.man_w^2*x(2)*cos(self.man_w*delta_x) self.man_A*self.man_w*sin(self.man_w*delta_x) 0 0 -self.man_A*self.man_w^2*x(2)*cos(self.man_w*delta_x); 
                     0 0 0 0 1];
-       end
+        end
+       
+        function reset(self, x)
+            self.current_lane_y = x(3);
+        end
+
     end
 end

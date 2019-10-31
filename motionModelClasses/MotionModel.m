@@ -39,5 +39,8 @@ classdef MotionModel < handle %& matlab.mixin.Copyable
         function setStates(self, x)
             self.states = x;
         end
+        
+        function reset(self, x)
+        end
     end
 end

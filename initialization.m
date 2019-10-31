@@ -1,4 +1,4 @@
-clear;
+% clear;
 
 % Get path of this file, and add the parent folder and the subfolders into
 % PATH
@@ -13,7 +13,7 @@ fullFilename = mfilename('fullpath')
 
 % addpath('./motionModelClasses')
 disp('Following files will be added to the path...');
-for folder = ["/motionModelClasses", "/mmae_filters", "/filter_classes", "/VehicleParameters"]
+for folder = ["/motionModelClasses", "/mmae_filters", "/filter_classes", "/VehicleParameters", "/datasetUtils"]
     folder_path = append(filepath, folder);
     disp(folder_path)
     addpath(folder_path)
@@ -29,7 +29,8 @@ rel_x = 0;
 X = [x vx y vy]';
 
 %Ts_bp = 0.01;
-Ts_bp = 0.1;
+%Ts_bp = 0.1;
+Ts_bp = 1/25;
 
 % covariance of the initial state conditions, i.e. priors
 P_init = .001;
