@@ -16,7 +16,7 @@ classdef ConstantAccelerationMotionModel < MotionModel & MeasurementModel
                               0     0           0   1   self.Ts     self.Ts^2/2;
                               0     0           0   0       1           self.Ts;
                               0     0           0   0       0               1];
-            self.Bd_matrix = [0; 0; 0; 0; 0; 0];
+            self.Bd_matrix = [0; 0; 1; 0; 0; 0] * self.Ts;
             
             self.Cd_matrix = [  1   0   0   0   0   0;
                                 0   0   0   1   0   0];

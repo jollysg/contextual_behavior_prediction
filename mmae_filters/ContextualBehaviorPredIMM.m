@@ -13,6 +13,10 @@ classdef ContextualBehaviorPredIMM < HighwayAllBehaviorsIMM
         function self = ContextualBehaviorPredIMM(Ts)
             self@HighwayAllBehaviorsIMM(Ts);
             self.context = zeros(6,1);
+            % start with 2 drivers - aggressive and passive by default
+            self.driverTypes = [0.5, 0.5];
+            self.thresholds = zeros(2, 1);
+            self.gapAcceptance = [1; 0];
         end    
         
         function extractContext(self, participantStates)

@@ -1,0 +1,52 @@
+figure(1)
+plot(simtime, [filter_traj(:).driver_weights]);
+legend('Driver 1', 'Driver 2');
+xlabel('Time (seconds)');
+ylabel('Driver weights (probabilities)');
+title('Driver weights vs time');
+grid on;
+
+figure(2)
+plot(simtime, [filter_traj(:).likelihoods]);
+legend('Straight pass', 'straight agg', 'left lane pass', 'left lane agg');
+xlabel('Time (seconds)');
+ylabel('likelihood of filters');
+title('Filter likelihoods vs time');
+grid on;
+
+figure(3)
+plot(simtime, [filter_traj(:).weights]);
+legend('Straight pass', 'straight agg', 'left lane pass', 'left lane agg');
+xlabel('Time (seconds)');
+ylabel('Filter probabilities');
+title('Filter probabilistic weights vs time');
+grid on;
+
+estimate_flt1 = [];
+for i = 1:length(filter_traj)
+    estimate_flt1(:,i) = squeeze(filter_traj(i).estimates(:,:,1));
+end
+
+figure(4)
+plot(simtime, estimate_flt1);
+legend('x', 'vx', 'ax', 'y', 'vy', 'ay');
+xlabel('Time (seconds)');
+ylabel('State estimate Filter 1');
+title('State estimates vs time');
+grid on;
+
+figure(5)
+plot(simtime, [filter_traj(:).combined_estimates]);
+legend('x', 'vx', 'ax', 'y', 'vy', 'ay');
+xlabel('Time (seconds)');
+ylabel('Combined estimates');
+title('Combined estimates vs time');
+grid on;
+
+figure(6)
+combined_estim_traj = [filter_traj(:).combined_estimates];
+estim_traj = zeros(2, length(simtim));
+estim_traj(1,:) = combined_estim_traj(1,:);
+estim_traj(2,:) = combined_estim_traj(2,:);
+plot(simtime, 
+

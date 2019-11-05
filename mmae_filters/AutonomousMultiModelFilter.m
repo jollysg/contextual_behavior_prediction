@@ -113,7 +113,9 @@ classdef AutonomousMultiModelFilter < handle
 
         function err = getFilterErrors(self)
             num_filters = length(self.elementalFilters);
-            err = zeros(self.no_of_states, 1, num_filters);
+            flt = self.elementalFilters{1};
+            no_of_observ = length(flt.mm.output_states);
+            err = zeros(no_of_observ, 1, num_filters);
             for i = 1:num_filters
                 flt = self.elementalFilters{i};
                 err(:,:, i) = flt.err_innov;
