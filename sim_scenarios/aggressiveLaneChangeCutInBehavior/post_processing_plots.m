@@ -1,6 +1,6 @@
 figure(1)
 plot(simtime, [filter_traj(:).driver_weights]);
-legend('Aggr. driver', 'Passive driver');
+legend('Driver 1', 'Driver 2');
 legend('Location', 'northwest');
 xlabel('Time (seconds)');
 ylabel('Driver weights (probabilities)');

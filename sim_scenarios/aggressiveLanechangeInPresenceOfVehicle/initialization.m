@@ -29,8 +29,8 @@ rel_x = 0;
 X = [x vx y vy]';
 
 %Ts_bp = 0.01;
-%Ts_bp = 0.1;
-Ts_bp = 1/25;
+Ts_bp = 0.1;
+% Ts_bp = 1/25;
 
 % covariance of the initial state conditions, i.e. priors
 P_init = .001;

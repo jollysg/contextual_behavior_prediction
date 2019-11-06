@@ -1,0 +1,91 @@
+
+meas = [groundTruth(:).y_tilde];
+time_ser = [groundTruth(:).t];
+estim = [filter_traj(:).combined_estimates];
+
+% predictions - 5x50x5x251 no_of_states, no_of_predictions, no_of_models,
+% no_of_time_steps
+predictions = out.predictions;
+
+%1x5x251 
+driver_wts = [filter_traj(:).driver_weights];
+wts = [filter_traj(:).weights];
+right_lane_center = zeros(1,length(time_ser));
+left_lane_center = right_lane_center + 3.5;
+trail_length = 20;
+
+for i = 1:length(time_ser)
+    if mod(i-1,5) == 0
+        
+%         preds = out.predictions.Data(:,:,:,i);
+        straight_pass_preds = filter_traj(i).predictions(:,:,1);
+        straight_agg_preds = filter_traj(i).predictions(:,:,2);
+        left_lane_passive = filter_traj(i).predictions(:,:,3);
+        left_lane_aggressive = filter_traj(i).predictions(:,:,4);
+        wt1 = wts(1,1:i);
+        wt2 = wts(2,1:i);
+        wt3 = wts(3,1:i);
+        wt4 = wts(4,1:i);
+        wted_pred = straight_pass_preds * wt1(end) ...
+            + straight_agg_preds * wt2(end) ...
+            + left_lane_passive * wt3(end) ...
+            + left_lane_aggressive * wt4(end);
+        trail_begin = i-trail_length;
+        if trail_begin < 1
+            trail_begin = 1;
+        end
+        front_vehicle_positions = [filter_traj(trail_begin:i).front_car_position];
+        left_lane_vehicle_positions = [filter_traj(trail_begin:i).leftLaneVehPosn];
+        tiledlayout(3,1);
+        nexttile;
+        plot(meas(1, 1:i), meas(2, 1:i), ...
+            estim(1, 1:i), estim(4, 1:i), ...
+            wted_pred(1, :), wted_pred(4,:), ...
+            front_vehicle_positions, right_lane_center(trail_begin:i), ...
+            left_lane_vehicle_positions, left_lane_center(trail_begin:i));
+%             straight_preds(1, :), straight_preds(3,:));
+        xlabel('x coordinate (m)');
+        ylabel('y coordinate (m)');
+        xlim([0 estim(1, end)]);
+        ymin = min(meas(2,:))-2;
+        ymax = max(meas(2,:))+2;
+        ylim([ymin ymax]);
+        legend('measurement', 'estimate', 'prediction', 'front vehicle', 'left lane vehicle');
+        legend('Location', 'eastoutside');
+        title('Participant trajectories X vs Y (m)');
+        
+        nexttile;
+%         wt1 = squeeze(wts(1,1,1:i));
+        plot(time_ser(1:i), wt1, ...
+            time_ser(1:i), wt2, ...
+            time_ser(1:i), wt3, ...
+            time_ser(1:i), wt4);
+        xlabel('time (seconds)');
+        ylabel('probabilistic weights');
+        xlim([0 time_ser(end)]);
+        ylim([-0.1 1.1]);
+        legend('straight passive', 'straight aggressive', 'left LC short' ...
+                                            , 'left LC long');
+        legend('Location', 'eastoutside');
+        title('Behavior weights (probability vs time)');
+        
+        nexttile
+        
+        plot(time_ser(1:i), driver_wts(1,1:i), ...
+            time_ser(1:i), driver_wts(2,1:i));
+        xlabel('time (seconds)');
+        ylabel('probabilistic weights');
+        xlim([0 time_ser(end)]);
+        ylim([-0.1 1.1]);
+        legend('aggressive driver', 'passive driver');
+        legend('Location', 'eastoutside');
+        title('Driver type weights vs time');
+        
+        pause(0.2);
+    end
+end
+ 
+% 111 is the index of the timestep
+% predictions = out.predictions.Data(:,:,111);
+% plot(predictions(1,:), predictions(3,:));
+

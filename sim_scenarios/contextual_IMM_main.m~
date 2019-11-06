@@ -1,31 +1,22 @@
 % contextual IMM program
 
-Ts_bp = 0.1;
-simtime = 0:Ts_bp:25;
-
 ctx_imm = SLContextualBehaviorPredIMM(Ts_bp);
-ctx_imm.driverThresholds = [30; 60];
+% thresholds - current lane threshold, next lane dist threshold and next
+% lane velocity threshold representing diff between self vel & follow veh
+% velocity. Vf - Vr < -1 (for a passive driver), Vf - Vr < 3 for aggressive
+% driver. This means that aggressive driver is willing to accept a lane
+% change gap even if the vehicle following in that lane has a higher speed
+% to cut in.
+ctx_imm.driverThresholds = [60 5 3; 60 20 -1];
+ctx_imm.driverTypes = [0.5 0.5];
 
-groundTruth = {};
-X_init = [x vx ax y vy ay]';
-X = X_init;
-X_GT = X_init;
-filter_traj = {};
-for i = 1:length(simtime)
-    t = simtime(i);
-    X_GT = generateGroundTruth(X_GT, 0);
-    [y_tilde, X] = generateMeasurement(X,0);
-    groundTruth(i).t = t;
-    groundTruth(i).gt_states = X_GT;
-    groundTruth(i).states = X;
-    groundTruth(i).y_tilde = y_tilde;
-end
+    initial_front_car_distance = 80;
+    leftLaneFollowingVehileInitPoint = -106;
 
 for i = 1:length(simtime)
     t = simtime(i);
-    front_car_distance = 100;
-    if simtime < 20
-        front_car_distance = front_car_distance - 5 * simtime;
+    if t < 20
+        front_car_distance = initial_front_car_distance - 3.33 * t;
     end
 %     if simtime > 5
 %         % update the prob transition matrix over here
@@ -45,7 +36,9 @@ for i = 1:length(simtime)
     no_of_filters = length(ctx_imm.elementalFilters);
 %     tp_matrix = eye(no_of_filters);
     
-    context = [100 100 100 100 100 100]';
+    %context vector - first 6 are distances and the next two are
+    %velcocities with following vehicles in the adjoining lane.
+    context = [100 100 100 100 100 100 0 0]';
     context(3) = front_car_distance;
     ctx_imm.extractContext(context);
     ctx_imm.gapAcceptancePolicy();
@@ -61,71 +54,25 @@ for i = 1:length(simtime)
     ctx_imm.predict(0);
     
     % correct and update probabilistic weights
-    y_tilde = groundTruth(i).y_tilde;
+    y_tilde = groundTruth(i).y_gt;
     ctx_imm.correct(y_tilde);
     
     % combined estimates
     [comb_x, comb_p] = ctx_imm.calculateCombinedEstimate();
     ctx_imm.driverUpdate();
     
-    filter_traj(i).prenormalizedWts = ctx_imm.getFilterNonNormalizedWeights();
-    filter_traj(i).weights = ctx_imm.getFilterWeights();
-    filter_traj(i).likelihoods = ctx_imm.getFilterLikelihoods();
+    filter_traj(i).prenormalizedWts = ctx_imm.getFilterNonNormalizedWeights()';
+    filter_traj(i).weights = ctx_imm.getFilterWeights()';
+    filter_traj(i).likelihoods = ctx_imm.getFilterLikelihoods()';
     filter_traj(i).estimates = ctx_imm.getFilterEstimates();
     filter_traj(i).err = ctx_imm.getFilterErrors();
 %     innovation = zeros(2, 1, 4);
-    innovation = err(1:2, 1, 1:4);
-    driver_weights = ctx_imm.driverTypes;
-    filter_traj(i) = ctx_imm;
+%     innovation = err(1:2, 1, 1:4);
+    filter_traj(i).driver_weights = ctx_imm.driverTypes';
+    filter_traj(i).combined_estimates = comb_x;
+    filter_traj(i).combined_p = comb_p;
+    filter_traj(i).gapAcceptance = ctx_imm.gapAcceptance;
+    filter_traj(i).context = context;
 end
 
-function [y, perturbed_states] = generateMeasurement(X, u)
-Ts_bp = 0.1;
-% states - X = [x vx y vy] -
-Ak = [  1   Ts_bp   Ts_bp^2/2   0   0   0;
-    0   1       Ts_bp       0   0   0;
-    0   0       1           0   0   0;
-    0   0       0           1 Ts_bp Ts_bp^2/2;
-    0   0       0           0   1   Ts_bp ;
-    0   0       0           0   0   1];
-Bk = [0; 0; 1; 0; 0; 0] * Ts_bp;
-Ck = [1 0 0 0 0 0; 0 0 0 1 0 0];
-
-% measurement noise std_dev
-%     R_sigma = [0.5 0; 0 0.5];
-R_sigma = [0.05 0; 0 0.05];
-
-% Measurement noise is being added externally using the random number block
-% R_sigma = [0.0 0; 0 0.0];
-
-% process noise std dev
-%    sigma_matrix = diag([0.16 0.16 0.16 0.16]);
-sigma_matrix = diag([0.032 0.032 0.032 0.032 0.032 0.032]);
-%     sigma_matrix = diag([0 0 0 0 0 0]);
-
-%     X(5) = 0;
-X(4) = 0;
-
-X_GT = Ak * X + Bk * u;
-perturbed_states = X_GT + sqrt(Ts_bp)*sigma_matrix*randn(6,1);
-
-y = Ck * X_GT + R_sigma * randn(2,1);
-end
-
-function [X_GT] = generateGroundTruth(X, u)
-Ts_bp = 0.1;
-% states - X = [x vx y vy] -
-Ak = [  1   Ts_bp   Ts_bp^2/2   0   0   0;
-    0   1       Ts_bp       0   0   0;
-    0   0       1           0   0   0;
-    0   0       0           1 Ts_bp Ts_bp^2/2;
-    0   0       0           0   1   Ts_bp ;
-    0   0       0           0   0   1];
-Bk = [0; 0; 1; 0; 0; 0] * Ts_bp;
-Ck = [1 0 0 0 0 0; 0 0 0 1 0 0];
-
-%     X(5) = 0;
-X(4) = 0;
-
-X_GT = Ak * X + Bk * u;
-end
+post_processing_plots;

@@ -1,10 +1,17 @@
 classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
     properties
-        % context vector = 6 distances around
+        % context vector = 6 distances around and 2 velocities adj lanes of
+        % following vehicles
         context
         % aggressive and passive driver probabilities [P(d1); P(d2)];
         driverTypes
-        % driver thresholds for gaps (distances for now)
+        % driver thresholds - current lane threshold, next lane dist
+        % threshold and next lane velocity threshold representing diff
+        % between self vel & follow veh velocity. Vf - Vr < -1 (for a
+        % passive driver), Vf - Vr < 3 for aggressive driver. This means
+        % that aggressive driver is willing to accept a lane change gap
+        % even if the vehicle following in that lane has a higher speed to
+        % cut in.
         driverThresholds
         % gap acceptance probabilities [P(G = 0); P(G = 1)]
         gapAcceptance
@@ -38,7 +45,7 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
             flt3.updateNoiseStatistics(Ql, R);
             
 
-            maneuver_length = 50;
+            maneuver_length = 70;
             mm = LeftLaneChangeRelativeMotionModelWithAcc(Ts,maneuver_length, lane_center_to_center_distance);
             flt4 = XKalmanFilter(Ts,mm);
             flt4.updateNoiseStatistics(Ql, R);
@@ -71,14 +78,14 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
             self.context = zeros(6,1);
             % start with 2 drivers - aggressive and passive by default
             self.driverTypes = [0.5, 0.5];
-            self.driverThresholds = zeros(2, 1);
+            self.driverThresholds = zeros(2, 3);
             self.gapAcceptance = [1; 0];
         end    
         
         function setInitialConditions(self, X, P)
             for i = 1:length(self.elementalFilters)
                 flt = self.elementalFilters{i};
-                if i == 3 | i == 4
+                if i == 3 || i == 4
                     X_aug = [X;0];
                     P_aug = diag([diag(P)' 1]);
                     flt.setInitialConditions(X_aug,P_aug);
@@ -99,9 +106,26 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
                 
         function gap = gapAcceptanceDriverPolicy(self, threshold, c)
             %gap = [ P(G=0; P(G=1)]
-            laneSatisfaction = (c(3)) > threshold; % perhaps c(4) is not needed here
-            leftLaneDissatisfaction = (c(1) + c(2)) <= threshold;
+            self_vel = self.combined_estimate(2);
+            % perhaps c(4) is not needed here, threshold(1) is current lane
+            % threshold
+            laneSatisfaction = (c(3)) > threshold(1);
+            % threshold(2) is adjoining lane rear distance threshold.
+            % threshold(3) is diff in velocity with the foll vehicle
+            % threshold
+            leftLaneDissatisfaction = c(1) <= threshold(2);
+            
+            %For now since we do not have a right lane, lets keep this as
+            %1, i.e condition dissatisfied. So gap will be rejected if
+            %left lane gap requirement is also dissatisfied. If we do not
+            %assume this for the right lane, then if the lanesatisfaction
+            %is 0, then the rightlane dissatisfaction will never be false
+            %as there are no vehicles over there, and hence the gap will
+            %always be accepted, even if there is a vehicle in the left
+            %lane.
+            % TODO: uncomment the following line in multilane scenarios.
 %             rightLaneDissatisfaction = (c(5) + c(6)) <= threshold;
+             rightLaneDissatisfaction = true;
             gap_rejected = double(laneSatisfaction | (leftLaneDissatisfaction & rightLaneDissatisfaction));
             gap = [gap_rejected; 1 - gap_rejected];
         end
@@ -114,8 +138,8 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
             d1 = self.driverTypes(1);
             % passive
             d2 = self.driverTypes(2);
-            gapAcceptAgg = self.gapAcceptanceDriverPolicy(self.driverThresholds(1), c);
-            gapAcceptPass = self.gapAcceptanceDriverPolicy(self.driverThresholds(2), c);
+            gapAcceptAgg = self.gapAcceptanceDriverPolicy(self.driverThresholds(1,:), c);
+            gapAcceptPass = self.gapAcceptanceDriverPolicy(self.driverThresholds(2,:), c);
             self.gapAcceptance = d1 * gapAcceptAgg + d2 * gapAcceptPass;
             normalizer = sum(self.gapAcceptance);
             self.gapAcceptance = self.gapAcceptance/normalizer;    
@@ -157,10 +181,10 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
             end
             
             den = g_na + d2*g_a + d1*g_a;
-            beh_prob_trans_matrix = [0.97         0.03*g_na/den  d2*g_a/den       d1*g_a/den;
+            beh_prob_trans_matrix = [0.97         0.03*g_na/den  0.03*d2*g_a/den       0.03*d1*g_a/den;
                                     (1-0.97)*g_na  0.97      0   (1-0.97)*g_a;
                                        0.03     0       0.97         0;
-                                       0.03    0        0          0.97];
+                                       0    0.03        0          0.97];
             
 %             beh_prob_trans_matrix = [d2*g_na d1*g_na  d2*g_a       d1*g_a;
 %                                       d2*g_na  d1*g_na      0          g_a;

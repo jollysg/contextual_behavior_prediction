@@ -1,0 +1,6 @@
+Scenario for an aggressive lane change. 
+The vehicle comes across a slower vehicle in the lane, as a result, wants to switch lane. The driver starts accelerating and then makes a quick lane change. The driver is classified as aggressive. 
+1. There is no vehicle in the adjoining lane in this case.
+2. No measurement or process noise.
+3. front vehicle(slower) is slower by 3.33 mps velocity. the driver thresholds are 60m for both the drivers.
+

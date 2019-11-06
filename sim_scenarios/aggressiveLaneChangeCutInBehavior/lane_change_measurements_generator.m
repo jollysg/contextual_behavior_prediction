@@ -54,7 +54,6 @@ for i = 1:length(simtime)
 %     [y_tilde, X] = generateMeasurement(X,acc);
     groundTruth(i).t = t;
     groundTruth(i).gt_states = laneChangeMeas(i).estimates;
-    noisy_est = addProcessNoise(laneChangeMeas(i).estimates,Ts_bp);
     groundTruth(i).states = laneChangeMeas(i).estimates;
     groundTruth(i).y_tilde = [laneChangeMeas(i).x; laneChangeMeas(i).y];
     groundTruth(i).y_gt = [laneChangeMeas(i).x; laneChangeMeas(i).y];
@@ -70,24 +69,3 @@ contextual_IMM_main;
 % % plot([laneChangeMeas(:).x], [laneChangeMeas(:).y]);
 % figure(3);
 % plot(simtime, [laneChangeMeas(:).estimates]);
-
-
-function x = addProcessNoise(X, Ts_bp)
-% process noise std dev
-%    sigma_matrix = diag([0.16 0.16 0.16 0.16]);
-sigma_matrix = diag([0.032 0.032 0.032 0.032 0.032 0.032]);
-%     sigma_matrix = diag([0 0 0 0 0 0]);
-x = X + sqrt(Ts_bp)*sigma_matrix*randn(6,1);
-end
-
-function y = generateNoisyMeasurement(X)
-Ck = [1 0 0 0 0 0; 0 0 0 1 0 0];
-
-% measurement noise std_dev
-%     R_sigma = [0.5 0; 0 0.5];
-R_sigma = [0.05 0; 0 0.05];
-
-% Measurement noise is being added externally using the random number block
-% R_sigma = [0.0 0; 0 0.0];
-y = Ck * X + R_sigma * randn(2,1);
-end

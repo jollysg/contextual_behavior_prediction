@@ -12,6 +12,7 @@ laneChangeMeas = {};
 % laneChangeMeas(1).x = X(1);
 % laneChangeMeas(1).y = X(4);
 lc_time = 19.3;
+enable_process_noise = true;
 for i = 1:length(simtime)
     t = simtime(i);
     if t>= 10 && t < 11
@@ -43,6 +44,9 @@ for i = 1:length(simtime)
             
     laneChangeMeas(i).x = X_aug(1);
     laneChangeMeas(i).y = X_aug(4);
+    if enable_process_noise
+        X_aug = addProcessNoise(X_aug,Ts_bp);
+    end
     laneChangeMeas(i).estimates = X_aug;
 end
 
@@ -54,9 +58,9 @@ for i = 1:length(simtime)
 %     [y_tilde, X] = generateMeasurement(X,acc);
     groundTruth(i).t = t;
     groundTruth(i).gt_states = laneChangeMeas(i).estimates;
-    noisy_est = addProcessNoise(laneChangeMeas(i).estimates,Ts_bp);
     groundTruth(i).states = laneChangeMeas(i).estimates;
-    groundTruth(i).y_tilde = [laneChangeMeas(i).x; laneChangeMeas(i).y];
+    noisy_meas = generateNoisyMeasurement(laneChangeMeas(i).estimates);
+    groundTruth(i).y_tilde = noisy_meas;
     groundTruth(i).y_gt = [laneChangeMeas(i).x; laneChangeMeas(i).y];
 end
 

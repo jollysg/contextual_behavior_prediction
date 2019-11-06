@@ -1,4 +1,4 @@
-classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
+classdef SLContextualBehaviorCharIMM < InteractiveMultiModelFilter
     properties
         % context vector = 6 distances around and 2 velocities adj lanes of
         % following vehicles
@@ -17,13 +17,9 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
         gapAcceptance
         driver1GapAcceptance
         driver2GapAcceptance
-        max_no_of_states
-        no_of_models
-        prediction_interval
-
     end
     methods
-        function self = SLContextualBehaviorPredIMM(Ts)
+        function self = SLContextualBehaviorCharIMM(Ts)
             self@InteractiveMultiModelFilter(Ts);
             mm = ZeroAccelerationAndLateralVelMotionModel(Ts);
 
@@ -35,25 +31,25 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
             R = [0.0025 0; 0 0.0025];
                         
             % added const velocity motion model
-            flt1 = XKalmanPredictor(Ts,mm);
+            flt1 = XKalmanFilter(Ts,mm);
             flt1.updateNoiseStatistics(Q, R);
             %         amm.addElementalFilter(flt);
 
             mm = ConstantAccelerationZeroLateralVelMotionModel(Ts);
-            flt2 = XKalmanPredictor(Ts,mm);
+            flt2 = XKalmanFilter(Ts,mm);
             flt2.updateNoiseStatistics(Q, R);
     
             maneuver_length = 100;
             lane_center_to_center_distance = 3.5;   %meters
             mm = LeftLaneChangeRelativeMotionModelWithAcc(Ts,maneuver_length, lane_center_to_center_distance);
-            flt3 = XKalmanPredictor(Ts,mm);
+            flt3 = XKalmanFilter(Ts,mm);
             Ql = diag([diag(Q)' 1]);
             flt3.updateNoiseStatistics(Ql, R);
             
 
             maneuver_length = 70;
             mm = LeftLaneChangeRelativeMotionModelWithAcc(Ts,maneuver_length, lane_center_to_center_distance);
-            flt4 = XKalmanPredictor(Ts,mm);
+            flt4 = XKalmanFilter(Ts,mm);
             flt4.updateNoiseStatistics(Ql, R);
 
 %             maneuver_length = 50;
@@ -88,37 +84,7 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
             self.gapAcceptance = [1; 0];
             self.driver1GapAcceptance = [1;0];
             self.driver2GapAcceptance = [1;0];
-            
-            self.no_of_models = length(self.elementalFilters);
-              max_states = 0;
-              for i = 1:length(self.elementalFilters)
-                  flt = self.elementalFilters{i};
-                  if max_states < flt.no_of_states
-                      max_states = flt.no_of_states;
-                  end
-                
-              end
-              self.max_no_of_states = max_states;
-              self.prediction_interval = 5;              
-
-        end   
-        
-        function pred = getPredictions(self)
-           no_of_predictions = self.prediction_interval/self.Ts; % 5 / Ts
-%            no_of_filters = length(self.elementalFilters);
-%            max_states = 5;
-           % no_of_states, time_steps, no_of_filters
-           %             pred = zeros(self.max_no_of_states, ...
-           %                 no_of_predictions, self.no_of_models);
-           pred = zeros(self.max_no_of_states,no_of_predictions,self.no_of_models);
-           for i = 1: self.no_of_models
-               flt = self.elementalFilters{i};
-               test = squeeze(flt.predictions_state);
-               pred(1:flt.no_of_states, 1:no_of_predictions, i) ...
-                   = test(1:flt.no_of_states, 1:no_of_predictions);
-           end
-       end
-
+        end    
         
         function setInitialConditions(self, X, P)
             for i = 1:length(self.elementalFilters)

@@ -1,10 +1,16 @@
 % contextual IMM program
 
 ctx_imm = SLContextualBehaviorPredIMM(Ts_bp);
-ctx_imm.driverThresholds = [60; 60];
+% thresholds - current lane threshold, next lane dist threshold and next
+% lane velocity threshold representing diff between self vel & follow veh
+% velocity. Vf - Vr < -1 (for a passive driver), Vf - Vr < 3 for aggressive
+% driver. This means that aggressive driver is willing to accept a lane
+% change gap even if the vehicle following in that lane has a higher speed
+% to cut in.
+ctx_imm.driverThresholds = [60 5 3; 60 20 -1];
 ctx_imm.driverTypes = [0.5 0.5];
 
-    initial_front_car_distance = 100;
+    initial_front_car_distance = 80;
 
 for i = 1:length(simtime)
     t = simtime(i);
@@ -29,8 +35,10 @@ for i = 1:length(simtime)
     no_of_filters = length(ctx_imm.elementalFilters);
 %     tp_matrix = eye(no_of_filters);
     
-    context = [100 100 100 100 100 100]';
-%     context(3) = front_car_distance;
+    %context vector - first 6 are distances and the next two are
+    %velcocities with following vehicles in the adjoining lane.
+    context = [100 100 100 100 100 100 0 0]';
+    context(3) = front_car_distance;
     ctx_imm.extractContext(context);
     ctx_imm.gapAcceptancePolicy();
     

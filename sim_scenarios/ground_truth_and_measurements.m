@@ -15,11 +15,11 @@ for i = 1:length(simtime)
     %Following code adds acceleration of 1m/s after 10 seconds for 1
     %second. As a result, the vehicle accelerates by 1 m/s after this.
     %Comment the following IF condition for a constant velocity run.
-    if t >= 10 && t < 11
-        acc = 1;
-    else
-        acc = 0;
-    end
+%     if t >= 10 && t < 11
+%         acc = 1;
+%     else
+%         acc = 0;
+%     end
     [y_gt, X_GT] = generateGroundTruth(X_GT, acc);
     [y_tilde, X] = generateMeasurement(X,acc);
     groundTruth(i).t = t;

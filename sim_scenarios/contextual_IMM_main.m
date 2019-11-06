@@ -1,10 +1,26 @@
 % contextual IMM program
 
 ctx_imm = SLContextualBehaviorPredIMM(Ts_bp);
-ctx_imm.driverThresholds = [60; 60];
+% thresholds - current lane threshold, next lane dist threshold and next
+% lane velocity threshold representing diff between self vel & follow veh
+% velocity. Vf - Vr < -1 (for a passive driver), Vf - Vr < 3 for aggressive
+% driver. This means that aggressive driver is willing to accept a lane
+% change gap even if the vehicle following in that lane has a higher speed
+% to cut in.
+ctx_imm.driverThresholds = [60 5 3; 60 15 -1];
 ctx_imm.driverTypes = [0.5 0.5];
 
-    initial_front_car_distance = 80;
+sigma_r = 0.05;
+enable_measurement_noise = true;
+
+%aggressive driver run
+% initial_front_car_distance = 100;
+% leftLaneFollowingVehicleInitPosition = -106;
+% 
+%Passive driver run
+initial_front_car_distance = 80;
+leftLaneFollowingVehicleInitPosition = -25;
+
 
 for i = 1:length(simtime)
     t = simtime(i);
@@ -24,19 +40,32 @@ for i = 1:length(simtime)
 %             0.015    0.97   0.015; ...
 %             0.015    0.015     0.97];
 %     end
-    % mix initial states for the current cycle first
     
+    % Left lane vehicle position and corresponding context update
+    leftLaneVehiclePosition = leftLaneFollowingVehicleInitPosition + 15*t;
+    dist_LV = ctx_imm.combined_estimate(1) - leftLaneVehiclePosition;
     no_of_filters = length(ctx_imm.elementalFilters);
 %     tp_matrix = eye(no_of_filters);
     
-    context = [100 100 100 100 100 100]';
+    %context vector - first 6 are distances and the next two are
+    %velcocities with following vehicles in the adjoining lane.
+    context = [100 100 100 100 100 100 15 15]';
+    
+    %comment following to remove the front vehicle
     context(3) = front_car_distance;
+    
+    %comment folling to remove the left lane vehicle
+    context(2) = dist_LV;
+    if t == 11.9
+        context(2) = dist_LV;
+    end
     ctx_imm.extractContext(context);
     ctx_imm.gapAcceptancePolicy();
     
     ctx_imm.calculateBehaviorProbabilityTransitionMatrix();
 %     tp_matrix = mat(1:4, 1:4);
     
+    % mix initial states for the current cycle first
     ctx_imm.mixEstimates();
     
     filter_traj(i).mark_trans_matrix = ctx_imm.markov_transition_matrix;
@@ -45,7 +74,12 @@ for i = 1:length(simtime)
     ctx_imm.predict(0);
     
     % correct and update probabilistic weights
-    y_tilde = groundTruth(i).y_gt;
+    
+    if enable_measurement_noise == true
+        y_tilde = groundTruth(i).y_tilde;
+    else
+        y_tilde = groundTruth(i).y_gt;
+    end
     ctx_imm.correct(y_tilde);
     
     % combined estimates
@@ -64,6 +98,12 @@ for i = 1:length(simtime)
     filter_traj(i).combined_p = comb_p;
     filter_traj(i).gapAcceptance = ctx_imm.gapAcceptance;
     filter_traj(i).context = context;
+    filter_traj(i).leftLaneVehPosn = leftLaneVehiclePosition;
+    filter_traj(i).distLLV = dist_LV;
+    filter_traj(i).d1GapAcceptPolicy = ctx_imm.driver1GapAcceptance;
+    filter_traj(i).d2GapAcceptPolicy = ctx_imm.driver2GapAcceptance;
+    filter_traj(i).predictions = ctx_imm.getPredictions();
+    filter_traj(i).front_car_position = comb_x(1) + front_car_distance;
 end
 
 post_processing_plots;

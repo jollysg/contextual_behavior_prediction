@@ -11,7 +11,7 @@ x_traj = out.long_laneChange_GT.trajectories_x.Data(:);
 y_traj = out.long_laneChange_GT.trajectories_y.Data(:);
 
 trueMeasurements = [x_traj';y_traj'];
-sigma_r = 0.05;
+sigma_r = 
 
 for i = 1:length(simtime)
     t = simtime(i);
@@ -23,7 +23,7 @@ for i = 1:length(simtime)
     groundTruth(i).t = t;
     groundTruth(i).gt_states = 0;
     groundTruth(i).states = 0;
-    groundTruth(i).y_tilde = y_gt + sigma_r * randn(2,1);
+    groundTruth(i).y_tilde = y_gt;
     groundTruth(i).y_gt = y_gt;
 end
 
