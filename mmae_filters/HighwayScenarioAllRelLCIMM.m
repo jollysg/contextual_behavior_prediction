@@ -2,12 +2,13 @@ classdef HighwayScenarioAllRelLCIMM < InteractiveMultiModelFilter
     methods
         function self = HighwayScenarioAllRelLCIMM(Ts)
             self@InteractiveMultiModelFilter(Ts);
-            mm = ConstantVelocityMotionModel(Ts);
+            mm = ConstantLongVelocityStatLateralMotionModel(Ts);
 
             % process noise covariance
             no_of_states = length(mm.states);
             self.no_of_states = no_of_states;
             Q = eye(no_of_states) * 0.01;
+%             Q = diag([0.001 0.01 0.001 0.01]);
             % measurement noise covariance
             R = [0.0025 0; 0 0.0025];
                         

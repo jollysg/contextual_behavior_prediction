@@ -79,7 +79,9 @@ contextual_IMM_main;
 function x = addProcessNoise(X, Ts_bp)
 % process noise std dev
 %    sigma_matrix = diag([0.16 0.16 0.16 0.16]);
-sigma_matrix = diag([0.032 0.032 0.032 0.032 0.032 0.032]);
+% sigma_matrix = diag([0.032 0.032 0.032 0.032 0.032 0.032]);
+sigma_matrix = diag([0.071 0.071 0.071 0.071 0.071 0.071]);
+% sigma_matrix = diag([0.1 0.1 0.1 0.1 0.1 0.1]);
 %     sigma_matrix = diag([0 0 0 0 0 0]);
 x = X + sqrt(Ts_bp)*sigma_matrix*randn(6,1);
 end

@@ -1,5 +1,5 @@
 figure(1)
-plot(simtime, [filter_traj(:).driver_weights]);
+plot(simtime, [filter_traj(:).driver_weights], 'Linewidth', 2);
 legend('Aggr. driver', 'Passive driver');
 legend('Location', 'northwest');
 xlabel('Time (seconds)');
@@ -20,7 +20,7 @@ ylim(lim)
 grid on;
 
 figure(3)
-plot(simtime, [filter_traj(:).weights]);
+plot(simtime, [filter_traj(:).weights], 'Linewidth', 1.5);
 legend('Straight pass', 'straight agg', 'left lane pass', 'left lane agg');
 legend('Location', 'northwest');
 xlabel('Time (seconds)');
@@ -59,12 +59,16 @@ meas = [groundTruth(:).y_tilde];
 % estim_traj = zeros(2, length(simtim));
 % estim_traj(1,:) = combined_estim_traj(1,:);
 % estim_traj(2,:) = combined_estim_traj(4,:);
-plot(combined_estim_traj(1,:), combined_estim_traj(4,:), y_gt(1,:), y_gt(2,:), meas(1,:), meas(2,:));
+plot(y_gt(1,:), y_gt(2,:), 'r', ...
+    meas(1,:), meas(2,:), 'g', ...
+    combined_estim_traj(1,:), combined_estim_traj(4,:), 'b', ...
+    'Linewidth', 1.5);
 title('Estimates vs ground truth of position trajectories');
 xlabel('x position (meters)');
 ylabel('y position (meters)');
-legend('estimates', 'ground truth', 'meas');
+legend('ground truth', 'meas', 'estimates');
 legend('Location', 'northwest');
 ylim([-1.75 3.5+1.75]);
 
-
+estim_comb = [combined_estim_traj(1,:); combined_estim_traj(4,:)];
+rms_error = rms(estim_comb' - y_gt')

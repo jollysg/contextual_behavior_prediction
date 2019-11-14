@@ -2,7 +2,7 @@ classdef HighwayAllBehaviorsIMM < InteractiveMultiModelFilter
     methods
         function self = HighwayAllBehaviorsIMM(Ts)
             self@InteractiveMultiModelFilter(Ts);
-            mm = ConstantLongVelocityStatLateralMotionModel(Ts);
+            mm = ConstantVelocityMotionModel(Ts);
 
             % process noise covariance
             no_of_states = length(mm.states);

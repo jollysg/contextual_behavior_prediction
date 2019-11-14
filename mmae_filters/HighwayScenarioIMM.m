@@ -2,13 +2,14 @@ classdef HighwayScenarioIMM < InteractiveMultiModelFilter
     methods
         function self = HighwayScenarioIMM(Ts)
             self@InteractiveMultiModelFilter(Ts);
-            mm = ConstantVelocityMotionModel(Ts);
+            mm = ConstantLongVelocityStatLateralMotionModel(Ts);
 
             % process noise covariance
             no_of_states = length(mm.states);
             self.no_of_states = no_of_states;
-            Q = eye(no_of_states) * 0.01;
+            Q = eye(no_of_states) * 0.001;
             % measurement noise covariance
+%             R = [0.0025 0; 0 0.0025];
             R = [0.0025 0; 0 0.0025];
                         
             % added const velocity motion model
@@ -35,13 +36,16 @@ classdef HighwayScenarioIMM < InteractiveMultiModelFilter
             P0 = eye(length(X0))*0.001;
             self.setInitialConditions(X0, P0);
             
-%             self.markov_transition_matrix = [0.9 0.05 0.05; ...
-%                                             0.09 0.9  0.01; ...
-%                                             0.09 0.01 0.9];
-
+%             self.markov_transition_matrix = [0.99 0.005 0.005; ...
+%                                             0.01 0.99  0; ...
+%                                             0.01 0.0 0.99];
+%             self.markov_transition_matrix = [1 0 0; ...
+%                                             0 1 0; ...
+%                                             0 0 1];
+% 
             self.markov_transition_matrix = [0.97 0.015 0.015; ...
-                                            0.029 0.97  0.001; ...
-                                            0.029 0.001 0.97];
+                                            0.03 0.97  0; ...
+                                            0.03 0 0.97];
 
 %             self.markov_transition_matrix = [0.34 0.33 0.33; ...
 %                                             0.399 0.6  0.001; ...

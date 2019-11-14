@@ -55,7 +55,7 @@ for i = 1:length(time_ser)
         xlim([0 time_ser(end)]);
         ylim([-0.1 1.1]);
         legend('straight', 'left LC short', 'left LC long', ...
-                'right LC short', 'right LC short');
+                'right LC short', 'right LC long');
         pause(0.2);
     end
 end

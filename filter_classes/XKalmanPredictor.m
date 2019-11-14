@@ -95,9 +95,11 @@ classdef XKalmanPredictor < XKalmanFilter
             self.predicted_state = x_plus;
             self.predicted_P = p_plus;
             
+%             self.likelihood = 1/sqrt(det(self.err_cov)*(2*pi)^length(y_tilde)) ...
+%                 * exp(-1/2 * self.err_innov'* inv(self.err_cov) * self.err_innov);
+            
             self.likelihood = 1/sqrt(det(2*pi*self.err_cov)) ...
                 * exp(-1/2 * self.err_innov'* inv(self.err_cov) * self.err_innov);
-            
 %             self.nonNormalizedWeight = self.weight * self.likelihood;
 
         end

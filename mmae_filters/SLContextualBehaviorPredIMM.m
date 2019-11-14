@@ -33,7 +33,8 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
             Q = eye(no_of_states) * 0.01;
             % measurement noise covariance
             R = [0.0025 0; 0 0.0025];
-                        
+%               R = [0.0064 0; 0 0.0064];
+%             R = [0.01 0; 0 0.01];
             % added const velocity motion model
             flt1 = XKalmanPredictor(Ts,mm);
             flt1.updateNoiseStatistics(Q, R);

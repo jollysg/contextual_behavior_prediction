@@ -2,7 +2,7 @@ classdef HighwayScenarioAMM < AutonomousMultiModelFilter
     methods
         function self = HighwayScenarioAMM(Ts)
             self@AutonomousMultiModelFilter(Ts);
-            mm = ConstantVelocityMotionModel(Ts);
+            mm = ConstantLongVelocityStatLateralMotionModel(Ts);
 
             % process noise covariance
             no_of_states = length(mm.states);
