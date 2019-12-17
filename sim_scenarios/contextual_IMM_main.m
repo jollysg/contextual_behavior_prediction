@@ -16,7 +16,7 @@ enable_measurement_noise = true;
 %aggressive driver run
 % initial_front_car_distance = 100;
 % leftLaneFollowingVehicleInitPosition = -106;
-% 
+
 %Passive driver run
 initial_front_car_distance = 80;
 leftLaneFollowingVehicleInitPosition = -25;
@@ -62,7 +62,7 @@ for i = 1:length(simtime)
     ctx_imm.extractContext(context);
     ctx_imm.gapAcceptancePolicy();
     
-%     ctx_imm.calculateBehaviorProbabilityTransitionMatrix();
+    ctx_imm.calculateBehaviorProbabilityTransitionMatrix();
 %     tp_matrix = mat(1:4, 1:4);
     
     % mix initial states for the current cycle first

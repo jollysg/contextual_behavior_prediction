@@ -21,12 +21,13 @@ xlabel('Longitudinal position (m)');
 ylabel('Lateral position (m)');
 title('Trajectory of the observed traffic participant');
 ylim ([-1 4.5]);
+xlim([0 250]);
 
 nexttile;
 plot(time_series, weights, 'Linewidth', 1.5);
 title('Probabilistic weights of maneuvers vs time');
-ylabel('Time (seconds)');
-xlabel('Probabilistic weights');
+ylabel('Probabilistic weights');
+xlabel('Time (seconds)');
 ylim ([-0.1 1.5]);
 % legend('Straight maneuver', 'Left lane change', 'Right lane change');
 legend('Straight maneuver', 'Left lane change short', 'Left lane change long',...
