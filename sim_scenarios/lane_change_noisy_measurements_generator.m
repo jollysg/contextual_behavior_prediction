@@ -15,6 +15,7 @@ else
 
 end
 
+% No acceleration input by default
 u = 0;
 
 % for passive driver
@@ -26,11 +27,7 @@ end
 
 % Start with constant acceleration
 X_aug = [0 10 0 0 0 0]';
-% mm = LeftLaneChangeRelativeMotionModel(Ts_bp, 100, 3.5);
-% x = [0 10 0 0 0]';
 laneChangeMeas = {};
-% laneChangeMeas(1).x = X(1);
-% laneChangeMeas(1).y = X(4);
 
 % time at which the lane change is complete. This comes out to be approx
 % the same for both scenarios and is just a mere coincidence
@@ -45,6 +42,8 @@ for i = 1:length(simtime)
             % apply 1 m/s2 acceleration as input for 1 second.
             u = 0.5;
             lc_time = 20.2;
+%             u = 1;
+%             lc_time = 19.3;
         else
             u = 0;
         end
@@ -91,8 +90,6 @@ groundTruth = struct.empty(0,length(simtime));
 
 for i = 1:length(simtime)
     t = simtime(i);
-%     [y_gt, X_GT] = generateGroundTruth(X_GT, acc);
-%     [y_tilde, X] = generateMeasurement(X,acc);
     groundTruth(i).t = t;
     groundTruth(i).gt_states = laneChangeMeas(i).estimates;
     groundTruth(i).states = laneChangeMeas(i).estimates;
@@ -103,34 +100,37 @@ end
 
 contextual_IMM_main;
 
+% debug visualizations for y axis of lane change vs time
 % figure(1);
 % plot(simtime, [laneChangeMeas(:).y]);
 % 
+
+% debug visualizations for y axis of lane change vs x.
 % figure(2);
 % plot([laneChangeMeas(:).x], [laneChangeMeas(:).y]);
-% % plot([laneChangeMeas(:).x], [laneChangeMeas(:).y]);
+
 % figure(3);
 % plot(simtime, [laneChangeMeas(:).estimates]);
 
 
 function x = addProcessNoise(X, Ts_bp)
-% process noise std dev
-%    sigma_matrix = diag([0.16 0.16 0.16 0.16]);
-% sigma_matrix = diag([0.032 0.032 0.032 0.032 0.032 0.032]);
-sigma_matrix = diag([0.071 0.071 0.071 0.071 0.071 0.071]);
-% sigma_matrix = diag([0.1 0.1 0.1 0.1 0.1 0.1]);
-%     sigma_matrix = diag([0 0 0 0 0 0]);
-x = X + sqrt(Ts_bp)*sigma_matrix*randn(6,1);
+    % process noise std dev
+    %    sigma_matrix = diag([0.16 0.16 0.16 0.16]);
+    % sigma_matrix = diag([0.032 0.032 0.032 0.032 0.032 0.032]);
+    % sigma_matrix = diag([0.1 0.1 0.1 0.1 0.1 0.1]);
+    %     sigma_matrix = diag([0 0 0 0 0 0]);
+    sigma_matrix = diag([0.071 0.071 0.071 0.071 0.071 0.071]);
+    x = X + sqrt(Ts_bp)*sigma_matrix*randn(6,1);
 end
 
 function y = generateNoisyMeasurement(X)
-Ck = [1 0 0 0 0 0; 0 0 0 1 0 0];
+    Ck = [1 0 0 0 0 0; 0 0 0 1 0 0];
 
-% measurement noise std_dev
-%     R_sigma = [0.5 0; 0 0.5];
-R_sigma = [0.05 0; 0 0.05];
+    % measurement noise std_dev
+    %     R_sigma = [0.5 0; 0 0.5];
+    R_sigma = [0.05 0; 0 0.05];
 
-% Measurement noise is being added externally using the random number block
-% R_sigma = [0.0 0; 0 0.0];
-y = Ck * X + R_sigma * randn(2,1);
+    % Measurement noise is being added externally using the random number block
+    % R_sigma = [0.0 0; 0 0.0];
+    y = Ck * X + R_sigma * randn(2,1);
 end

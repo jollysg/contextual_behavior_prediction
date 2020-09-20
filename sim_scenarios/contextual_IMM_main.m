@@ -26,25 +26,11 @@ for i = 1:length(simtime)
     if t < 20
         front_car_distance = initial_front_car_distance - 3.33 * t;
     end
-%     if simtime > 5
-%         % update the prob transition matrix over here
-%         amm.markov_transition_matrix = [0.99   0.005 0.005; ...
-%             0.015    0.97   0.015; ...
-%             0.015    0.015     0.97];
-%     end
-% 
-%     if simtime > 5.1
-%         % update the prob transition matrix over here
-%         amm.markov_transition_matrix = [0.97   0.015 0.015; ...
-%             0.015    0.97   0.015; ...
-%             0.015    0.015     0.97];
-%     end
-    
+        
     % Left lane vehicle position and corresponding context update
     leftLaneVehiclePosition = leftLaneFollowingVehicleInitPosition + 15*t;
     dist_LV = ctx_imm.combined_estimate(1) - leftLaneVehiclePosition;
     no_of_filters = length(ctx_imm.elementalFilters);
-%     tp_matrix = eye(no_of_filters);
     
     %context vector - first 6 are distances and the next two are
     %velcocities with following vehicles in the adjoining lane.
@@ -58,11 +44,11 @@ for i = 1:length(simtime)
     if t == 11.9
         context(2) = dist_LV;
     end
+    
     ctx_imm.extractContext(context);
     ctx_imm.gapAcceptancePolicy();
     
     ctx_imm.calculateBehaviorProbabilityTransitionMatrix();
-%     tp_matrix = mat(1:4, 1:4);
     
     % mix initial states for the current cycle first
     ctx_imm.mixEstimates();
@@ -90,8 +76,6 @@ for i = 1:length(simtime)
     filter_traj(i).likelihoods = ctx_imm.getFilterLikelihoods()';
     filter_traj(i).estimates = ctx_imm.getFilterEstimates();
     filter_traj(i).err = ctx_imm.getFilterErrors();
-%     innovation = zeros(2, 1, 4);
-%     innovation = err(1:2, 1, 1:4);
     filter_traj(i).driver_weights = ctx_imm.driverTypes';
     filter_traj(i).combined_estimates = comb_x;
     filter_traj(i).combined_p = comb_p;
