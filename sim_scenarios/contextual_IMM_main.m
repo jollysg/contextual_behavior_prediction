@@ -13,14 +13,13 @@ ctx_imm.driverTypes = [0.5 0.5];
 sigma_r = 0.05;
 enable_measurement_noise = true;
 
-%aggressive driver run
-%initial_front_car_distance = 100;
-%leftLaneFollowingVehicleInitPosition = -106;
-
-%Passive driver run
-initial_front_car_distance = 80;
-leftLaneFollowingVehicleInitPosition = -25;
-
+if aggressive_driver_use_case == true
+    initial_front_car_distance = 100;
+    leftLaneFollowingVehicleInitPosition = -106;
+else
+    initial_front_car_distance = 80;
+    leftLaneFollowingVehicleInitPosition = -25;
+end
 
 for i = 1:length(simtime)
     t = simtime(i);
