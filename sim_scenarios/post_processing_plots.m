@@ -71,4 +71,6 @@ legend('Location', 'northwest');
 ylim([-1.75 3.5+1.75]);
 
 estim_comb = [combined_estim_traj(1,:); combined_estim_traj(4,:)];
-rms_error = rms(estim_comb' - y_gt')
+
+% Requires signal processing toolbox
+% rms_error = rms(estim_comb' - y_gt')
