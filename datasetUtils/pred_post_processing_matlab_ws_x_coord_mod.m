@@ -94,8 +94,8 @@ for i = 1:length(time_ser)
         xlim([0 estim(1, end)]);
         ylabel('probabilistic weights');
         ylim([-0.1 1.1]);
-        legend('straight passive', 'straight aggressive', 'left LC short' ...
-                                            , 'left LC long');
+        legend('straight passive', 'straight aggressive', 'left LC long' ...
+                                            , 'left LC short');
         legend('Location', 'eastoutside');
         title('Behavior weights (probability vs time)');
         
