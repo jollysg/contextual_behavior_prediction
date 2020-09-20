@@ -5,7 +5,7 @@ estim = [filter_traj(:).combined_estimates];
 
 % predictions - 5x50x5x251 no_of_states, no_of_predictions, no_of_models,
 % no_of_time_steps
-predictions = out.predictions;
+%predictions = out.predictions;
 
 %1x5x251 
 driver_wts = [filter_traj(:).driver_weights];
@@ -94,8 +94,8 @@ for i = 1:length(time_ser)
         xlim([0 estim(1, end)]);
         ylabel('probabilistic weights');
         ylim([-0.1 1.1]);
-        legend('straight passive', 'straight aggressive', 'left LC short' ...
-                                            , 'left LC long');
+        legend('straight passive', 'straight aggressive', 'left LC long' ...
+                                            , 'left LC short');
         legend('Location', 'eastoutside');
         title('Behavior weights (probability vs time)');
         

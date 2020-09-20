@@ -1,28 +1,8 @@
 Ts_bp = 0.1;
 simtime = 0:Ts_bp:25;
-
-% set the following true for the aggressive driver scenario, false for the
-% passive drive scenario.
-aggressive_driver_use_case = true;
-
 mm1 = ZeroAccelerationAndLateralVelMotionModel(Ts_bp);
 mm2 = ConstantAccelerationZeroLateralVelMotionModel(Ts_bp);
-
-if aggressive_driver_use_case == true
-    mm3 = LeftLaneChangeRelativeMotionModelWithAcc(Ts_bp, 70, 3.5);
-else
-    mm3 = LeftLaneChangeRelativeMotionModelWithAcc(Ts_bp, 100, 3.5);
-
-end
-
-u = 0;
-
-% for passive driver
-lane_change_initiation_time = 10; 
-
-if aggressive_driver_use_case == true
-    lane_change_initiation_time = 15;
-end
+mm3 = LeftLaneChangeRelativeMotionModelWithAcc(Ts_bp, 100, 3.5);
 
 % Start with constant acceleration
 X_aug = [0 10 0 0 0 0]';
@@ -31,54 +11,41 @@ X_aug = [0 10 0 0 0 0]';
 laneChangeMeas = {};
 % laneChangeMeas(1).x = X(1);
 % laneChangeMeas(1).y = X(4);
-
-% time at which the lane change is complete. This comes out to be approx
-% the same for both scenarios and is just a mere coincidence
 lc_time = 19.3;
-
 enable_process_noise = false;
 for i = 1:length(simtime)
     t = simtime(i);
-    
-    if aggressive_driver_use_case == true
-        if t>= 10 && t < 11        
-            % apply 1 m/s2 acceleration as input for 1 second.
-            u = 0.5;
-            lc_time = 20.2;
-        else
-            u = 0;
-        end
+    if t>= 10 && t < 11        
+        % apply 1 m/s2 acceleration as input for 1 second.
+%         u = 0.5;
+%         lc_time = 20.2;
+%         u = 1;
+%         lc_time = 19.3;
+    else
+        u = 0;
     end
     
-    if t == lane_change_initiation_time
+    if t == 10
         % store the maneuver start point
         x_mid = X_aug(1);
     end
     
-    if aggressive_driver_use_case == true
-       if t < 10
-            X_aug = mm1.propagate(X_aug, 0);
-       elseif t >= 10 && t < 15
-            X_aug = mm2.propagate(X_aug, u);
-       elseif t >=15 && t < lc_time
-            X_lc = [X_aug; x_mid];
-            X_lc = mm3.propagate(X_lc, u);
-            X_aug = X_lc(1:6);
-       elseif t >=lc_time
-            X_aug = mm2.propagate(X_aug, u);
-       end
-    else
-       if t < 10
-            X_aug = mm1.propagate(X_aug, 0);
-       elseif t >=lane_change_initiation_time && t < lc_time
-            X_lc = [X_aug; x_mid];
-            X_lc = mm3.propagate(X_lc, u);
-            X_aug = X_lc(1:6);
-       elseif t >=lc_time
-            X_aug = mm2.propagate(X_aug, u);
-       end
+    if t < 10
+        X_aug = mm1.propagate(X_aug, 0);
+%     elseif t >= 10 && t < 15
+%         X_aug = mm2.propagate(X_aug, u);
+%     elseif t >=15 && t < lc_time
+%         X_lc = [X_aug; x_mid];
+%         X_lc = mm3.propagate(X_lc, u);
+%         X_aug = X_lc(1:6);
+    elseif t >=10 && t < lc_time
+        X_lc = [X_aug; x_mid];
+        X_lc = mm3.propagate(X_lc, u);
+        X_aug = X_lc(1:6);
+   elseif t >=lc_time
+        X_aug = mm2.propagate(X_aug, u);
     end
-                
+            
     laneChangeMeas(i).x = X_aug(1);
     laneChangeMeas(i).y = X_aug(4);
     if enable_process_noise
