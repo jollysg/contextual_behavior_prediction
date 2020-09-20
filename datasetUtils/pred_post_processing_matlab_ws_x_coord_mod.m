@@ -5,7 +5,7 @@ estim = [filter_traj(:).combined_estimates];
 
 % predictions - 5x50x5x251 no_of_states, no_of_predictions, no_of_models,
 % no_of_time_steps
-predictions = out.predictions;
+%predictions = out.predictions;
 
 %1x5x251 
 driver_wts = [filter_traj(:).driver_weights];

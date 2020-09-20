@@ -14,8 +14,8 @@ sigma_r = 0.05;
 enable_measurement_noise = true;
 
 %aggressive driver run
-% initial_front_car_distance = 100;
-% leftLaneFollowingVehicleInitPosition = -106;
+%initial_front_car_distance = 100;
+%leftLaneFollowingVehicleInitPosition = -106;
 
 %Passive driver run
 initial_front_car_distance = 80;
