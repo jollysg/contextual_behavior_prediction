@@ -31,14 +31,15 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
             no_of_states = length(mm.states);
             self.no_of_states = no_of_states;
             Q = eye(no_of_states) * 0.01;
+
             % measurement noise covariance
             R = [0.0025 0; 0 0.0025];
 %               R = [0.0064 0; 0 0.0064];
 %             R = [0.01 0; 0 0.01];
+
             % added const velocity motion model
             flt1 = XKalmanPredictor(Ts,mm);
             flt1.updateNoiseStatistics(Q, R);
-            %         amm.addElementalFilter(flt);
 
             mm = ConstantAccelerationZeroLateralVelMotionModel(Ts);
             flt2 = XKalmanPredictor(Ts,mm);
@@ -49,24 +50,12 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
             mm = LeftLaneChangeRelativeMotionModelWithAcc(Ts,maneuver_length, lane_center_to_center_distance);
             flt3 = XKalmanPredictor(Ts,mm);
             Ql = diag([diag(Q)' 1]);
-            flt3.updateNoiseStatistics(Ql, R);
-            
+            flt3.updateNoiseStatistics(Ql, R);            
 
             maneuver_length = 70;
             mm = LeftLaneChangeRelativeMotionModelWithAcc(Ts,maneuver_length, lane_center_to_center_distance);
             flt4 = XKalmanPredictor(Ts,mm);
             flt4.updateNoiseStatistics(Ql, R);
-
-%             maneuver_length = 50;
-%             lane_center_to_center_distance = 3.5;   %meters
-%             mm = RightLaneChangeRelativeMotionModel(Ts,maneuver_length, lane_center_to_center_distance);
-%             flt4 = XKalmanFilter(Ts,mm);
-%             flt4.updateNoiseStatistics(Ql, R);
-%             
-%             maneuver_length = 100;
-%             mm = RightLaneChangeRelativeMotionModel(Ts,maneuver_length, lane_center_to_center_distance);
-%             flt5 = XKalmanFilter(Ts,mm);
-%             flt5.updateNoiseStatistics(Ql, R);
 
             self.elementalFilters = {flt1, flt2, flt3, flt4};
             self.resetFilterWeights();
@@ -83,6 +72,7 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
 
             self.normalizers = zeros(length(self.elementalFilters), 1);
             self.context = zeros(6,1);
+            
             % start with 2 drivers - aggressive and passive by default
             self.driverTypes = [0.5, 0.5];
             self.driverThresholds = zeros(2, 3);
@@ -97,7 +87,6 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
                   if max_states < flt.no_of_states
                       max_states = flt.no_of_states;
                   end
-                
               end
               self.max_no_of_states = max_states;
               self.prediction_interval = 5;              
@@ -106,11 +95,7 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
         
         function pred = getPredictions(self)
            no_of_predictions = self.prediction_interval/self.Ts; % 5 / Ts
-%            no_of_filters = length(self.elementalFilters);
-%            max_states = 5;
            % no_of_states, time_steps, no_of_filters
-           %             pred = zeros(self.max_no_of_states, ...
-           %                 no_of_predictions, self.no_of_models);
            pred = zeros(self.max_no_of_states,no_of_predictions,self.no_of_models);
            for i = 1: self.no_of_models
                flt = self.elementalFilters{i};
@@ -227,22 +212,7 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
                                     (1-0.97)*g_na  0.97      0   (1-0.97)*g_a;
                                        0.03     0       0.97         0;
                                        0    0.03        0          0.97];
-            
-%             beh_prob_trans_matrix = [d2*g_na d1*g_na  d2*g_a       d1*g_a;
-%                                       d2*g_na  d1*g_na      0          g_a;
-%                                        g_na     0       g_a         0;
-%                                         g_na    0        0          g_a];
-              
-%             beh_prob_trans_matrix = [d2*g_na d1*g_na  d2*g_a       d1*g_a;
-%                                         0      g_na      0          g_a;
-%                                        g_na     0       g_a         0;
-%                                         g_na    0        0          g_a];
-            
-%             beh_prob_trans_matrix = [g_a    0           0       g_na;
-%                                       0    g_a          0       g_na;
-%                                      g_a    0           g_na     0;
-%                                     d1*ga d2*ga     d1*g_na     d2*g_na];
-                                  
+                                              
             % Normalize the matrix
             normalizers = sum(beh_prob_trans_matrix');
             n = length(self.elementalFilters);
@@ -250,9 +220,7 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
             for i = 1: n
                 normalized_ptm(i,:) = beh_prob_trans_matrix(i,:) ./ normalizers(i);
             end
-%             normalized_ptm = beh_prob_trans_matrix ./ normalizers';
             
-            % Now can it be mapped directly to transition matrix?
             self.markov_transition_matrix = normalized_ptm;
         end
         
@@ -288,15 +256,6 @@ classdef SLContextualBehaviorPredIMM < InteractiveMultiModelFilter
             end
             self.P_combined_estimate = comb_P;
         end
-        
-%         function est_cov = getFilterEstimateCovariances(self)
-%             num_filters = length(self.elementalFilters);
-%             est_cov = zeros(self.no_of_states, self.no_of_states, num_filters);
-%             for i = 1:num_filters
-%                 flt = self.elementalFilters{i};
-%                 est_cov(:,:, i) = flt.predicted_P(1:self.no_of_states, 1:self.no_of_states);
-%             end
-%         end
         
         function est = getFilterEstimates(self)
             num_filters = length(self.elementalFilters);

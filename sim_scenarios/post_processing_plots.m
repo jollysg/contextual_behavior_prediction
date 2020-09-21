@@ -56,9 +56,6 @@ figure(6)
 combined_estim_traj = [filter_traj(:).combined_estimates];
 y_gt = [groundTruth(:).y_gt];
 meas = [groundTruth(:).y_tilde];
-% estim_traj = zeros(2, length(simtim));
-% estim_traj(1,:) = combined_estim_traj(1,:);
-% estim_traj(2,:) = combined_estim_traj(4,:);
 plot(y_gt(1,:), y_gt(2,:), 'r', ...
     meas(1,:), meas(2,:), 'g', ...
     combined_estim_traj(1,:), combined_estim_traj(4,:), 'b', ...

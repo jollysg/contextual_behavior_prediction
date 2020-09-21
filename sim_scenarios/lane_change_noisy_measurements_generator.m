@@ -8,7 +8,7 @@ aggressive_driver_use_case = false;
 mm1 = ZeroAccelerationAndLateralVelMotionModel(Ts_bp);
 mm2 = ConstantAccelerationZeroLateralVelMotionModel(Ts_bp);
 
-if aggressive_driver_use_case == true
+if aggressive_driver_use_case == false
     mm3 = LeftLaneChangeRelativeMotionModelWithAcc(Ts_bp, 70, 3.5);
 else
     mm3 = LeftLaneChangeRelativeMotionModelWithAcc(Ts_bp, 100, 3.5);
