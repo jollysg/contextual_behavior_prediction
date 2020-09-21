@@ -1,6 +1,0 @@
-Scenario for an passive lane change. 
-The vehicle comes across a slower vehicle in the lane, as a result, wants to switch lane. The driver maintains the speed and changes lane gradually. The driver is classified as passive.
-1. There is no vehicle in the adjoining lane in this case.
-2. No measurement or process noise.
-3. front vehicle(slower) is slower by 3.33 mps velocity, starts with a front distance of 80m (instead of 100m in the other scenarios). the driver thresholds are 60m for both the drivers.
-

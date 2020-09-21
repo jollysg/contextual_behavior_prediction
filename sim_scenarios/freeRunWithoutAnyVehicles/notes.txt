@@ -1,8 +1,0 @@
-Scenario for free running. No vehicles around. The context vector is max
-
-The measurements can be switched between two scenarios:
-1. Constant velocity driving.
-2. Constant velocity driving for 10 seconds, and then accelerated driving after.
-
-The IMM classifies the accelerated driving into aggressive driving in the second scenario.
-

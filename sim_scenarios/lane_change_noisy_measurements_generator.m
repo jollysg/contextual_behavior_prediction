@@ -3,7 +3,7 @@ simtime = 0:Ts_bp:25;
 
 % set the following true for the aggressive driver scenario, false for the
 % passive drive scenario.
-aggressive_driver_use_case = true;
+aggressive_driver_use_case = false;
 
 mm1 = ZeroAccelerationAndLateralVelMotionModel(Ts_bp);
 mm2 = ConstantAccelerationZeroLateralVelMotionModel(Ts_bp);
