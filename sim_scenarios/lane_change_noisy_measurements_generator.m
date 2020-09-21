@@ -3,15 +3,15 @@ simtime = 0:Ts_bp:25;
 
 % set the following true for the aggressive driver scenario, false for the
 % passive drive scenario.
-aggressive_driver_use_case = false;
+aggressive_driver_use_case = true;
 
 mm1 = ZeroAccelerationAndLateralVelMotionModel(Ts_bp);
 mm2 = ConstantAccelerationZeroLateralVelMotionModel(Ts_bp);
 
 if aggressive_driver_use_case == false
-    mm3 = LeftLaneChangeRelativeMotionModelWithAcc(Ts_bp, 70, 3.5);
-else
     mm3 = LeftLaneChangeRelativeMotionModelWithAcc(Ts_bp, 100, 3.5);
+else
+    mm3 = LeftLaneChangeRelativeMotionModelWithAcc(Ts_bp, 70, 3.5);
 
 end
 
