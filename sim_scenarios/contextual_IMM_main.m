@@ -11,7 +11,6 @@ ctx_imm.driverThresholds = [60 5 3; 60 15 -1];
 ctx_imm.driverTypes = [0.5 0.5];
 
 sigma_r = 0.05;
-enable_measurement_noise = true;
 
 if aggressive_driver_use_case == true
     initial_front_car_distance = 100;

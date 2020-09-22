@@ -3,7 +3,7 @@ simtime = 0:Ts_bp:25;
 
 % set the following true for the aggressive driver scenario, false for the
 % passive drive scenario.
-aggressive_driver_use_case = true;
+aggressive_driver_use_case = false;
 
 mm1 = ZeroAccelerationAndLateralVelMotionModel(Ts_bp);
 mm2 = ConstantAccelerationZeroLateralVelMotionModel(Ts_bp);
@@ -34,6 +34,8 @@ laneChangeMeas = {};
 lc_time = 19.3;
 
 enable_process_noise = false;
+enable_measurement_noise = true;
+
 for i = 1:length(simtime)
     t = simtime(i);
     
@@ -93,7 +95,7 @@ for i = 1:length(simtime)
     groundTruth(i).t = t;
     groundTruth(i).gt_states = laneChangeMeas(i).estimates;
     groundTruth(i).states = laneChangeMeas(i).estimates;
-    noisy_meas = generateNoisyMeasurement(laneChangeMeas(i).estimates);
+    noisy_meas = generateMeasurement(laneChangeMeas(i).estimates, enable_measurement_noise);
     groundTruth(i).y_tilde = noisy_meas;
     groundTruth(i).y_gt = [laneChangeMeas(i).x; laneChangeMeas(i).y];
 end
@@ -123,14 +125,17 @@ function x = addProcessNoise(X, Ts_bp)
     x = X + sqrt(Ts_bp)*sigma_matrix*randn(6,1);
 end
 
-function y = generateNoisyMeasurement(X)
+function y = generateMeasurement(X, enable_measurement_noise)
     Ck = [1 0 0 0 0 0; 0 0 0 1 0 0];
 
     % measurement noise std_dev
     %     R_sigma = [0.5 0; 0 0.5];
-    R_sigma = [0.05 0; 0 0.05];
-
+        
+    if enable_measurement_noise == true
+        R_sigma = [0.05 0; 0 0.05];
+    else
+        R_sigma = [0.0 0; 0 0.0];
+    end
     % Measurement noise is being added externally using the random number block
-    % R_sigma = [0.0 0; 0 0.0];
     y = Ck * X + R_sigma * randn(2,1);
 end
