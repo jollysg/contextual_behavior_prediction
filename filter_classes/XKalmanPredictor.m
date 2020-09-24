@@ -69,27 +69,7 @@ classdef XKalmanPredictor < XKalmanFilter
             x_prop = self.predicted_state;
             p_prop = self.predicted_P;
         end
- 
-%         function [x_prop, p_prop] = predict(self, u, x, P)
-%             if nargin == 2
-%                 % Use the last propagated states for propagating further
-%                 x = self.predicted_state;
-%                 P = self.predicted_P;
-%             end
-%             x_prop =  self.mm.propagate(x, u);
-%             
-%             % The first term in the covariance equation can be moved into
-%             % motion model for abstraction, but it will make the motion
-%             % model closely coupled with KF
-%             F = self.mm.linearizedDiscreteStateTransitionMatrix(x, u);
-%             p_prop = (F * P * F') + self.Ts*self.Q;
-%             
-%             %also predict for the next few time steps
-% 
-%             self.predicted_state = x_prop;
-%             self.predicted_P = p_prop;
-%         end
-        
+         
         function [x_plus, p_plus] = correct(self, y_tilde, x_prop, P_prop)
             if nargin == 2
                 x_prop = self.predicted_state;
@@ -116,9 +96,6 @@ classdef XKalmanPredictor < XKalmanFilter
             % the same.
             self.predicted_state = x_plus;
             self.predicted_P = p_plus;
-            
-%             self.likelihood = 1/sqrt(det(self.err_cov)*(2*pi)^length(y_tilde)) ...
-%                 * exp(-1/2 * self.err_innov'* inv(self.err_cov) * self.err_innov);
             
             self.likelihood = 1/sqrt(det(2*pi*self.err_cov)) ...
                 * exp(-1/2 * self.err_innov'* inv(self.err_cov) * self.err_innov);

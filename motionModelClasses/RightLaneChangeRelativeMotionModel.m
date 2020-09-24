@@ -22,15 +22,7 @@
 
 classdef RightLaneChangeRelativeMotionModel < LeftLaneChangeRelativeMotionModel
     properties
-%         % Maneuver length
-%         L
-%         % Lane width
-%         Wl
-%         % Maneuver amplitude
-%         man_A
-%         % Maneuver frequency calculated from length, w = 2*Pi*1/L = Pi/L
-%         man_w
-%         
+
     end
     
     methods
@@ -52,12 +44,7 @@ classdef RightLaneChangeRelativeMotionModel < LeftLaneChangeRelativeMotionModel
             self.propagated_states = x_plus;
 
         end
-        
-%         function F = linearizedDiscreteStateTransitionMatrix(self, x, u)
-%             % This can call jacobian function if needed
-%             F = self.jacobian(x,u);
-%         end
-        
+                
         function dfdx = jacobian(self, x, u)
             % TODO: Correct this jacobian, the following is the linear
             % discretized propagation. The jacobian won't have the 1s

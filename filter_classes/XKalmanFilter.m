@@ -83,37 +83,7 @@ classdef XKalmanFilter < handle %& matlab.mixin.Copyable
                 self.predicted_P = P;
                 self.mm.reset(X);
         end
-               
-%         function [x_prop, p_prop] = predict(self, u, x, P)
-%             if nargin == 2
-%                 Use the last propagated states for propagating further
-%                 x = self.predicted_state;
-%                 P = self.predicted_P;
-%             end
-%             
-%             also predict for the next few time steps (4-5 secs)
-%             fsteps = 5/self.Ts;
-%             pred_X = zeros([size(x), fsteps]);
-%             pred_P = zeros([size(P), fsteps]);
-%             
-%             for i = 1:fsteps
-%                 x = self.mm.propagate(x, u);
-% 
-%                 The first term in the covariance equation can be moved into
-%                 motion model for abstraction, but it will make the motion
-%                 model closely coupled with KF
-%                 F = self.mm.linearizedDiscreteStateTransitionMatrix(x, u);
-%                 P = (F * P * F') + self.Ts*self.Q;
-%                 pred_X(:,:, i) = x;
-%                 pred_P(:,:, i) = P;
-%             end
-% 
-%             self.predicted_state = pred_X(:,:, 1);
-%             self.predicted_P = pred_P(:, :, 1);
-%             self.predictions_state = pred_X;
-%             self.predictions_P = pred_P;
-%         end
-%  
+ 
         function [x_prop, p_prop] = predict(self, u, x, P)
             if nargin == 2
                 % Use the last propagated states for propagating further

@@ -64,28 +64,6 @@ classdef LeftLaneChangeRelativeMotionModelWithAcc < NonLinearMotionModel & Measu
             self.current_lane_y = 0;
         end
 
-%         function x_plus = propagate(self, x, u)
-%             % states are [x, vx, ax, y, vy, ay, x_mid], where x_mid is point of
-%             % maneuver initiation
-%             % y propagation = -A cos(wx - x_mid) + A;
-%             delta_x = x(1) - x(7);
-%             new_y = 0;
-%             if delta_x < self.L
-%                 %hold the y
-%                 new_y = -self.man_A * cos(self.man_w*delta_x) + self.man_A + self.current_lane_y;                
-%             else
-%                 new_y = x(4);
-%             end
-%             x_plus = [x(1) + x(2)*self.Ts + x(3)*self.Ts^2/2; ...
-%                             x(2) + self.Ts * x(3); ...
-%                                 x(3); ...
-%                          new_y; ...
-%                          self.man_A*self.man_w*x(2)*sin(self.man_w*delta_x); ...
-%                          x(3) * self.man_A * self.man_w *sin(self.man_w*delta_x) + self.man_A*self.man_w^2*x(2)^2*cos(self.man_w*delta_x);
-%                             x(7)] + self.Bd_matrix * u;
-%             self.propagated_states = x_plus;
-%         end
-        
         function x_plus = propagate(self, x, u)
             % states are [x, vx, ax, y, vy, ay, x_mid], where x_mid is point of
             % maneuver initiation

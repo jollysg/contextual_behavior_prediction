@@ -79,9 +79,6 @@ classdef SimplifiedKinematicBicycleModel < NonLinearMotionModel & MeasurementMod
         function x_apriori = propagate(obj, x, u)
             % input u is [a, omega], 
             
-%             Fd = obj.linearizedDiscreteStateTransitionMatrix(x, u);
-%             x_apriori = Fd * x + obj.Bd_matrix*u;
-%             obj.propagated_states = x_apriori;
             % [ x y psi v delta]
             % x' = v cos(psi)
             % y' = v sin(psi)
