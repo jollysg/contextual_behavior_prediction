@@ -12,7 +12,7 @@ At present, the developed model is in MATLAB source files. The source for C++/Py
 
 
 1. To ensure all the relevant files are included in the MATLAB path, run the initialization.m file from the root folder.
-2. The entry point for the source is in Sim Scenarios folder. 
+2. The entry point for the source is in sim_scenarios folder. 
 - Run the 'lane_change_noisy_measurements_generator.m' file in the sim_scenarios folder. It generates the ground truth for the simulated scenarios and calls the contextual_IMM_main.m file. To aggressive or passive driver scenarios can be switched using the 'aggressive_driver_use_case' flag in this file.
 - contextual_IMM_main.m runs the predictions for the scenarios modeled and calls post_processing_plots.m.
 - post_processing_plots.m generates the plots for the prediction model.
