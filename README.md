@@ -7,6 +7,20 @@ For further details, please refer to the [PhD dissertation](https://tigerprints.
 Gill, Jasprit Singh, "Probabilistic Framework for Behavior Characterization of Traffic Participants Enabling Long Term Prediction" (2019). All Dissertations. 2509.
 https://tigerprints.clemson.edu/all_dissertations/2509
 
+## Framework demonstration
+#### Aggressive Driver scenario:
+[![Aggressive Drive Scenario](/home/jasprit/Pictures/aggressive_driver_scenario.png)](https://www.youtube.com/embed/viispI7NazM)
+
+#### Passive Driver scenario: 
+[![Passive Drive Scenario](https://www.youtube.com/embed/KN_oYHsRDd4/0.jpg)](https://www.youtube.com/embed/KN_oYHsRDd4)
+
+The simulated video shows 3 subplots:
+1. Participant Trajectories: This subplot shows the trajectories followed by the 3 participants chosen for the 2 lane driving scenario. Y coordinate of 0 represents the center of the right lane and 3.5m represents the center of the left lane. The observed vehicle is in the right lane (bottom). Red line represents the trajectory tracked (i.e. current and past positions) by the observed vehicle and yellow represents the predicted trajectory for it at any time instant. The predictions take into account the probabilities of the behavior type as well as the driver types identified for it at any instant. Purple line represents the preceeding vehicle position in front of the observed vehicle in the right lane. Green line represents the position of the another traffic participant in the left lane. 
+
+2. Behavior Probabilities: This subplot shows the probabilistic measures of the behavior identified for the observed vehicle by the behavior prediction model after taking into account the vehicle measurements and the context around it. Four behaviors were considered for this scenario - a passive straight, an aggressive straight (with heavy acceleration), short aggressive lane change and long passive lane change.
+
+3. Driver type weights vs time: This subplot shows the probabilitic measures of the driver type detected for the observed vehicle by the behavior prediction model after taking into account the vehicle measurements and the context around it. 
+
 ## Source Code Instructions
 At present, the developed model is in MATLAB source files. The source for C++/Python is in works and will be available soon. 
 
