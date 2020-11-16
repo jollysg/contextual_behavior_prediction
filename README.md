@@ -8,6 +8,8 @@ Gill, Jasprit Singh, "Probabilistic Framework for Behavior Characterization of T
 https://tigerprints.clemson.edu/all_dissertations/2509
 
 ## Framework demonstration
+Click on the images below to see the animations generated from the matlab source.
+
 #### Aggressive Driver scenario:
 [![Aggressive Drive Scenario](https://github.com/jollysg/contextual_behavior_prediction/blob/master/readme_images/aggressive_driver_scenario.png)](https://www.youtube.com/embed/viispI7NazM)
 
