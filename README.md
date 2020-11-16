@@ -9,10 +9,10 @@ https://tigerprints.clemson.edu/all_dissertations/2509
 
 ## Framework demonstration
 #### Aggressive Driver scenario:
-[![Aggressive Drive Scenario](/home/jasprit/Pictures/aggressive_driver_scenario.png)](https://www.youtube.com/embed/viispI7NazM)
+[![Aggressive Drive Scenario](https://github.com/jollysg/contextual_behavior_prediction/blob/master/readme_images/aggressive_driver_scenario.png)](https://www.youtube.com/embed/viispI7NazM)
 
 #### Passive Driver scenario: 
-[![Passive Drive Scenario](https://www.youtube.com/embed/KN_oYHsRDd4/0.jpg)](https://www.youtube.com/embed/KN_oYHsRDd4)
+[![Passive Drive Scenario](https://github.com/jollysg/contextual_behavior_prediction/blob/master/readme_images/passive_driver_scenario.png)](https://www.youtube.com/embed/KN_oYHsRDd4)
 
 The simulated video shows 3 subplots:
 1. Participant Trajectories: This subplot shows the trajectories followed by the 3 participants chosen for the 2 lane driving scenario. Y coordinate of 0 represents the center of the right lane and 3.5m represents the center of the left lane. The observed vehicle is in the right lane (bottom). Red line represents the trajectory tracked (i.e. current and past positions) by the observed vehicle and yellow represents the predicted trajectory for it at any time instant. The predictions take into account the probabilities of the behavior type as well as the driver types identified for it at any instant. Purple line represents the preceeding vehicle position in front of the observed vehicle in the right lane. Green line represents the position of the another traffic participant in the left lane. 
