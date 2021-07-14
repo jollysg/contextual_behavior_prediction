@@ -21,7 +21,7 @@
 % SOFTWARE.
 
 Ts_bp = 0.1;
-simtime = 0:Ts_bp:25;
+simtime = 0:Ts_bp:30;
 
 % set the following true for the aggressive driver scenario, false for the
 % passive drive scenario.
@@ -121,6 +121,8 @@ for i = 1:length(simtime)
     groundTruth(i).y_tilde = noisy_meas;
     groundTruth(i).y_gt = [laneChangeMeas(i).x; laneChangeMeas(i).y];
 end
+
+simtime = 0:Ts_bp:25;
 
 contextual_IMM_main;
 
